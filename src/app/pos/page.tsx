@@ -2,24 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+import { demoProducts } from "@/lib/catalog/demo-products";
+import type { CatalogProduct } from "@/lib/catalog/types";
 import { offlineDatabase } from "@/lib/offline/database";
 
-type Product = {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-};
-
-const products: Product[] = [
-  { id: "amber-50", name: "Amber No. 50", category: "Signature", price: 68 },
-  { id: "cedar-04", name: "Cedar No. 04", category: "Woody", price: 54 },
-  { id: "fig-12", name: "Fig No. 12", category: "Fresh", price: 62 },
-  { id: "linen-08", name: "Linen No. 08", category: "Everyday", price: 48 },
-];
-
 export default function PointOfSale() {
-  const [cart, setCart] = useState<Product[]>([]);
+  const [cart, setCart] = useState<CatalogProduct[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const [pendingSales, setPendingSales] = useState(0);
 
@@ -40,7 +28,8 @@ export default function PointOfSale() {
 
   const total = cart.reduce((sum, product) => sum + product.price, 0);
 
-  function addToCart(product: Product) {
+  function addToCart(product: CatalogProduct) {
+    if (product.stock === 0) return;
     setCart((currentCart) => [...currentCart, product]);
   }
 
@@ -79,17 +68,18 @@ export default function PointOfSale() {
               <p className="text-sm text-[#69736b]">Main store</p>
               <h2 className="mt-1 text-3xl font-semibold tracking-tight">Choose a product</h2>
             </div>
-            <span className="text-sm text-[#69736b]">{products.length} available</span>
+            <span className="text-sm text-[#69736b]">{demoProducts.length} available</span>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            {products.map((product) => (
-              <button className="group border border-[#d8d4ca] bg-[#fffdf8] p-5 text-left transition hover:-translate-y-1 hover:border-[#c75c3b]" key={product.id} onClick={() => addToCart(product)}>
+            {demoProducts.map((product) => (
+              <button className="group border border-[#d8d4ca] bg-[#fffdf8] p-5 text-left transition hover:-translate-y-1 hover:border-[#c75c3b] disabled:cursor-not-allowed disabled:opacity-55" disabled={product.stock === 0} key={product.id} onClick={() => addToCart(product)}>
                 <div className="flex aspect-[4/3] items-end bg-[#e8dfd2] p-4 text-4xl font-semibold text-[#c75c3b] transition group-hover:bg-[#ead4c6]">{product.name.slice(0, 1)}</div>
                 <p className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-[#8b6b58]">{product.category}</p>
                 <div className="mt-1 flex items-center justify-between gap-4">
                   <span className="font-semibold">{product.name}</span>
                   <span>${product.price}</span>
                 </div>
+                <p className="mt-2 text-xs text-[#69736b]">{product.stock === 0 ? "Out of stock" : `${product.stock} in stock`} · {product.sku}</p>
               </button>
             ))}
           </div>
