@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Biznizer
 
-## Getting Started
+Biznizer is a multi-store business platform, starting with a point-of-sale workflow that works online and offline.
 
-First, run the development server:
+### Current stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js App Router and TypeScript
+- Tailwind CSS
+- Supabase Auth and PostgreSQL
+- Dexie for the browser offline catalog and pending-sale queue
+
+### Connect Supabase
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. In **Project Settings -> API**, copy the project URL and publishable key into `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+NEXT_PUBLIC_SUPABASE_STORE_ID=
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Open the Supabase **SQL Editor** and run [the catalog migration](supabase/migrations/20260911000100_initial_catalog.sql).
+4. Create your first user in **Authentication -> Users** and copy that user's UUID.
+5. Run this setup SQL in the SQL Editor, replacing `YOUR_AUTH_USER_UUID` first:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sql
+insert into public.organizations (id, name)
+values ('00000000-0000-0000-0000-000000000001', 'My Business');
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+insert into public.organization_members (organization_id, user_id, role)
+values ('00000000-0000-0000-0000-000000000001', 'YOUR_AUTH_USER_UUID', 'owner');
 
-## Learn More
+insert into public.stores (id, organization_id, name)
+values ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'Main Store');
 
-To learn more about Next.js, take a look at the following resources:
+insert into public.categories (store_id, name)
+values
+  ('00000000-0000-0000-0000-000000000002', 'Signature'),
+  ('00000000-0000-0000-0000-000000000002', 'Woody'),
+  ('00000000-0000-0000-0000-000000000002', 'Fresh');
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+6. Set the store ID in `.env.local`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+NEXT_PUBLIC_SUPABASE_STORE_ID=00000000-0000-0000-0000-000000000002
+```
 
-## Deploy on Vercel
+7. Restart the development server with `npm run dev` and open `/pos`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Until a store ID and catalog rows exist, the POS intentionally uses its local demo catalog. This keeps the interface usable while Supabase is being configured.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Development
+
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) for the workspace or [http://localhost:3000/pos](http://localhost:3000/pos) for the POS.
+
+Before submitting changes, run:
+
+```bash
+npm run lint
+npm run build
+```

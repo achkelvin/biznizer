@@ -2,20 +2,38 @@
 
 import { useEffect, useState } from "react";
 
-import { demoProducts } from "@/lib/catalog/demo-products";
+import { getCachedCatalog, refreshCatalog } from "@/lib/catalog/repository";
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { offlineDatabase } from "@/lib/offline/database";
 
 export default function PointOfSale() {
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [cart, setCart] = useState<CatalogProduct[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const [pendingSales, setPendingSales] = useState(0);
+  const [catalogStatus, setCatalogStatus] = useState<"loading" | "ready" | "cached">("loading");
 
   useEffect(() => {
     const updateConnection = () => setIsOnline(window.navigator.onLine);
+    const loadCatalog = async () => {
+      const cachedCatalog = await getCachedCatalog();
+      setProducts(cachedCatalog);
+      setCatalogStatus("cached");
+
+      if (window.navigator.onLine) {
+        try {
+          const liveCatalog = await refreshCatalog();
+          setProducts(liveCatalog);
+          setCatalogStatus("ready");
+        } catch {
+          // Cached catalog remains available when the network or Supabase is unavailable.
+        }
+      }
+    };
     const updatePendingSales = async () => setPendingSales(await offlineDatabase.pendingSales.count());
 
     updateConnection();
+    void loadCatalog();
     void updatePendingSales();
     window.addEventListener("online", updateConnection);
     window.addEventListener("offline", updateConnection);
@@ -68,10 +86,11 @@ export default function PointOfSale() {
               <p className="text-sm text-[#69736b]">Main store</p>
               <h2 className="mt-1 text-3xl font-semibold tracking-tight">Choose a product</h2>
             </div>
-            <span className="text-sm text-[#69736b]">{demoProducts.length} available</span>
+            <span className="text-sm text-[#69736b]">{products.length} available</span>
           </div>
+          <div className="mb-4 text-xs text-[#69736b]">{catalogStatus === "loading" ? "Loading catalog..." : catalogStatus === "cached" ? "Using cached catalog" : "Catalog synced"}</div>
           <div className="grid gap-4 sm:grid-cols-2">
-            {demoProducts.map((product) => (
+            {products.map((product) => (
               <button className="group border border-[#d8d4ca] bg-[#fffdf8] p-5 text-left transition hover:-translate-y-1 hover:border-[#c75c3b] disabled:cursor-not-allowed disabled:opacity-55" disabled={product.stock === 0} key={product.id} onClick={() => addToCart(product)}>
                 <div className="flex aspect-[4/3] items-end bg-[#e8dfd2] p-4 text-4xl font-semibold text-[#c75c3b] transition group-hover:bg-[#ead4c6]">{product.name.slice(0, 1)}</div>
                 <p className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-[#8b6b58]">{product.category}</p>
