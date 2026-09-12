@@ -55,6 +55,17 @@ Until a store ID and catalog rows exist, the POS intentionally uses its local de
 
 The `/pos` and `/catalog` routes require a Supabase session. Visit `/login` and sign in with the user created in **Authentication -> Users**. Unauthenticated visitors are redirected to `/login` and returned to their original route after signing in.
 
+### Test roles
+
+1. Run [the team permissions migration](supabase/migrations/20260912000200_team_permissions.sql) in Supabase SQL Editor.
+2. Open `/login` and choose **Create a new account** for a test user.
+3. Confirm the email if Supabase email confirmation is enabled.
+4. Copy the new user's UUID from **Authentication -> Users**.
+5. Sign in as the owner and open `/team`.
+6. Assign the test user `staff` or `manager`.
+7. Sign out and sign in as the test user.
+8. Open `/catalog`: staff see a read-only catalog; managers can add products.
+
 ### Development
 
 ```bash
