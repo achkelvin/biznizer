@@ -3,7 +3,7 @@ import { z } from "zod";
 const publicEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
-  NEXT_PUBLIC_SUPABASE_STORE_ID: z.string().uuid().optional(),
+  NEXT_PUBLIC_SUPABASE_STORE_ID: z.string().optional(),
 });
 
 export function getPublicEnv() {
@@ -12,4 +12,9 @@ export function getPublicEnv() {
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_SUPABASE_STORE_ID: process.env.NEXT_PUBLIC_SUPABASE_STORE_ID,
   });
+}
+
+export function getStoreId() {
+  const storeId = getPublicEnv().NEXT_PUBLIC_SUPABASE_STORE_ID;
+  return storeId && z.string().uuid().safeParse(storeId).success ? storeId : undefined;
 }

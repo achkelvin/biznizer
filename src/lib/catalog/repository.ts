@@ -1,6 +1,6 @@
 import { demoProducts } from "@/lib/catalog/demo-products";
 import type { CatalogProduct } from "@/lib/catalog/types";
-import { getPublicEnv } from "@/lib/env";
+import { getStoreId } from "@/lib/env";
 import { offlineDatabase } from "@/lib/offline/database";
 import { createClient } from "@/lib/supabase/client";
 
@@ -22,13 +22,23 @@ type CategoryRow = {
   name: string;
 };
 
+export type CatalogCategory = CategoryRow;
+
+export type NewCatalogProduct = {
+  name: string;
+  sku: string;
+  price: number;
+  categoryId: string | null;
+  stock: number;
+};
+
 export async function getCachedCatalog() {
   const cachedProducts = await offlineDatabase.catalogProducts.toArray();
   return cachedProducts.length > 0 ? cachedProducts : demoProducts;
 }
 
 export async function refreshCatalog(): Promise<CatalogProduct[]> {
-  const { NEXT_PUBLIC_SUPABASE_STORE_ID: storeId } = getPublicEnv();
+  const storeId = getStoreId();
   if (!storeId) return getCachedCatalog();
 
   const supabase = createClient();
@@ -56,4 +66,42 @@ export async function refreshCatalog(): Promise<CatalogProduct[]> {
   await offlineDatabase.catalogProducts.clear();
   await offlineDatabase.catalogProducts.bulkPut(catalog);
   return catalog;
+}
+
+export async function getCatalogCategories() {
+  const storeId = getStoreId();
+  if (!storeId) return [];
+
+  const supabase = createClient();
+  const { data, error } = await supabase.from("categories").select("id, name").eq("store_id", storeId).order("name");
+  if (error) throw error;
+  return data as CatalogCategory[];
+}
+
+export async function createCatalogProduct(product: NewCatalogProduct) {
+  const storeId = getStoreId();
+  if (!storeId) throw new Error("Configure a Supabase store before adding products.");
+
+  const supabase = createClient();
+  const { data: productRow, error: productError } = await supabase
+    .from("products")
+    .insert({
+      store_id: storeId,
+      category_id: product.categoryId,
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+    })
+    .select("id")
+    .single();
+
+  if (productError) throw productError;
+
+  const { error: inventoryError } = await supabase.from("inventory").insert({
+    store_id: storeId,
+    product_id: productRow.id,
+    quantity: product.stock,
+  });
+
+  if (inventoryError) throw inventoryError;
 }

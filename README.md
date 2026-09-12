@@ -51,6 +51,10 @@ NEXT_PUBLIC_SUPABASE_STORE_ID=00000000-0000-0000-0000-000000000002
 
 Until a store ID and catalog rows exist, the POS intentionally uses its local demo catalog. This keeps the interface usable while Supabase is being configured.
 
+### Authentication
+
+The `/pos` and `/catalog` routes require a Supabase session. Visit `/login` and sign in with the user created in **Authentication -> Users**. Unauthenticated visitors are redirected to `/login` and returned to their original route after signing in.
+
 ### Development
 
 ```bash
