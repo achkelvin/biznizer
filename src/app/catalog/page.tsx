@@ -29,8 +29,9 @@ export default function CatalogPage() {
       const [catalog, categoryRows] = await Promise.all([refreshCatalog(), getCatalogCategories()]);
       setProducts(catalog);
       setCategories(categoryRows);
-      setRole(await getCurrentUserRole());
-      setStatus(`${catalog.length} products in this store`);
+      const currentRole = await getCurrentUserRole();
+      setRole(currentRole);
+      setStatus(currentRole ? `${catalog.length} products in this store` : "Could not resolve your store role. Check your membership and store ID.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Could not load the catalog.");
     }

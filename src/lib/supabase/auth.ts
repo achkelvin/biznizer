@@ -11,6 +11,11 @@ export async function getCurrentUserRole(): Promise<StoreRole | null> {
   const storeId = getStoreId();
   if (!storeId) return null;
 
+  const { data: roleFromDatabase, error: roleError } = await supabase.rpc("store_member_role", {
+    target_store_id: storeId,
+  });
+  if (!roleError && isStoreRole(roleFromDatabase)) return roleFromDatabase;
+
   const { data: store, error: storeError } = await supabase.from("stores").select("organization_id").eq("id", storeId).maybeSingle();
   if (storeError || !store) return null;
 
@@ -22,5 +27,9 @@ export async function getCurrentUserRole(): Promise<StoreRole | null> {
     .maybeSingle();
 
   if (membershipError || !membership) return null;
-  return membership.role as StoreRole;
+  return isStoreRole(membership.role) ? membership.role : null;
+}
+
+function isStoreRole(value: unknown): value is StoreRole {
+  return value === "owner" || value === "manager" || value === "staff";
 }
