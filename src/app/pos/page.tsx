@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { getCachedCatalog, refreshCatalog } from "@/lib/catalog/repository";
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { offlineDatabase } from "@/lib/offline/database";
+import { createClient } from "@/lib/supabase/client";
 
 export default function PointOfSale() {
+  const router = useRouter();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [cart, setCart] = useState<CatalogProduct[]>([]);
   const [isOnline, setIsOnline] = useState(true);
@@ -64,6 +67,11 @@ export default function PointOfSale() {
     setCart([]);
   }
 
+  async function signOut() {
+    await createClient().auth.signOut();
+    router.replace("/login");
+  }
+
   return (
     <main className="min-h-full flex-1 bg-[#f4f1ea] text-[#1d2a24]">
       <header className="flex items-center justify-between border-b border-[#d8d4ca] bg-[#fffdf8] px-6 py-5 sm:px-10">
@@ -77,6 +85,7 @@ export default function PointOfSale() {
             <span aria-hidden="true">&#9679;</span> {isOnline ? "Online" : "Offline"}
           </span>
           <span className="hidden text-[#69736b] sm:inline">{pendingSales} queued</span>
+          <button aria-label="Sign out" className="text-[#69736b] transition hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button>
         </div>
       </header>
 

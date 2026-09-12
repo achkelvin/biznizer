@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   createCatalogProduct,
@@ -9,25 +10,35 @@ import {
   type CatalogCategory,
 } from "@/lib/catalog/repository";
 import type { CatalogProduct } from "@/lib/catalog/types";
+import { getCurrentUserRole, type StoreRole } from "@/lib/supabase/auth";
+import { createClient } from "@/lib/supabase/client";
 
 const emptyForm = { name: "", sku: "", price: "", stock: "", categoryId: "" };
 
 export default function CatalogPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [categories, setCategories] = useState<CatalogCategory[]>([]);
   const [form, setForm] = useState(emptyForm);
   const [status, setStatus] = useState("Loading catalog...");
   const [isSaving, setIsSaving] = useState(false);
+  const [role, setRole] = useState<StoreRole | null>(null);
 
   async function loadCatalog() {
     try {
       const [catalog, categoryRows] = await Promise.all([refreshCatalog(), getCatalogCategories()]);
       setProducts(catalog);
       setCategories(categoryRows);
+      setRole(await getCurrentUserRole());
       setStatus(`${catalog.length} products in this store`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Could not load the catalog.");
     }
+  }
+
+  async function signOut() {
+    await createClient().auth.signOut();
+    router.replace("/login");
   }
 
   useEffect(() => {
@@ -64,7 +75,7 @@ export default function CatalogPage() {
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c75c3b]">Biznizer</p>
           <h1 className="mt-1 text-xl font-semibold">Catalog management</h1>
         </div>
-        <a className="text-sm text-[#69736b] transition hover:text-[#c75c3b]" href="/pos">Back to POS</a>
+        <div className="flex items-center gap-5 text-sm"><a className="text-[#69736b] transition hover:text-[#c75c3b]" href="/pos">Back to POS</a><button className="text-[#69736b] transition hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button></div>
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_340px]">
@@ -90,7 +101,7 @@ export default function CatalogPage() {
           </div>
         </section>
 
-        <form className="h-fit border border-[#d8d4ca] bg-[#fffdf8] p-6 lg:sticky lg:top-6" onSubmit={(event) => void handleSubmit(event)}>
+        {role === "owner" || role === "manager" ? <form className="h-fit border border-[#d8d4ca] bg-[#fffdf8] p-6 lg:sticky lg:top-6" onSubmit={(event) => void handleSubmit(event)}>
           <h2 className="text-xl font-semibold">Add product</h2>
           <p className="mt-2 text-sm leading-6 text-[#69736b]">New products become available in the POS after saving.</p>
           <div className="mt-6 space-y-4">
@@ -103,7 +114,7 @@ export default function CatalogPage() {
             <label className="block text-sm font-semibold">Category<select className="mt-2 w-full border border-[#d8d4ca] bg-[#f4f1ea] px-3 py-3 font-normal outline-none focus:border-[#c75c3b]" value={form.categoryId} onChange={(event) => setForm({ ...form, categoryId: event.target.value })}><option value="">Uncategorized</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
           </div>
           <button className="mt-6 w-full bg-[#1d2a24] px-5 py-4 text-sm font-bold text-[#fffdf8] transition hover:bg-[#c75c3b] disabled:cursor-not-allowed disabled:bg-[#b5b8b2]" disabled={isSaving} type="submit">{isSaving ? "Saving..." : "Add to catalog"}</button>
-        </form>
+        </form> : <aside className="h-fit border border-[#d8d4ca] bg-[#fffdf8] p-6 lg:sticky lg:top-6"><h2 className="text-xl font-semibold">Read-only catalog</h2><p className="mt-2 text-sm leading-6 text-[#69736b]">Your staff role can view products, but only managers and owners can change the catalog.</p></aside>}
       </div>
     </main>
   );
