@@ -15,7 +15,7 @@ export class BiznizerDatabase extends Dexie {
 
   constructor() {
     super("biznizer");
-    this.version(1).stores({
+    this.version(2).stores({
       pendingSales: "id, createdAt, syncStatus",
       catalogProducts: "id, category, sku",
     });

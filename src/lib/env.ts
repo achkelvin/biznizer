@@ -16,5 +16,6 @@ export function getPublicEnv() {
 
 export function getStoreId() {
   const storeId = getPublicEnv().NEXT_PUBLIC_SUPABASE_STORE_ID;
-  return storeId && z.string().uuid().safeParse(storeId).success ? storeId : undefined;
+  if (!storeId) return undefined;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(storeId) ? storeId : undefined;
 }
