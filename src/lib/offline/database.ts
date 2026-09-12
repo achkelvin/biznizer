@@ -1,11 +1,12 @@
 import Dexie, { type EntityTable } from "dexie";
 
 import type { CatalogProduct } from "@/lib/catalog/types";
+import type { SalePayload } from "@/lib/sales/repository";
 
 export type PendingSale = {
   id: string;
   createdAt: string;
-  payload: Record<string, unknown>;
+  payload: SalePayload;
   syncStatus: "pending" | "syncing" | "failed";
 };
 
@@ -15,7 +16,7 @@ export class BiznizerDatabase extends Dexie {
 
   constructor() {
     super("biznizer");
-    this.version(2).stores({
+    this.version(3).stores({
       pendingSales: "id, createdAt, syncStatus",
       catalogProducts: "id, category, sku",
     });

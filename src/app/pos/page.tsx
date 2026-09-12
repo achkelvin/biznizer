@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { getCachedCatalog, refreshCatalog } from "@/lib/catalog/repository";
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { offlineDatabase } from "@/lib/offline/database";
+import { recordSale, toSalePayload } from "@/lib/sales/repository";
 import { createClient } from "@/lib/supabase/client";
 
 export default function PointOfSale() {
@@ -15,6 +16,21 @@ export default function PointOfSale() {
   const [isOnline, setIsOnline] = useState(true);
   const [pendingSales, setPendingSales] = useState(0);
   const [catalogStatus, setCatalogStatus] = useState<"loading" | "ready" | "cached">("loading");
+  const [saleStatus, setSaleStatus] = useState("");
+
+  async function syncPendingSales() {
+    const queuedSales = await offlineDatabase.pendingSales.where("syncStatus").equals("pending").toArray();
+    for (const queuedSale of queuedSales) {
+      try {
+        await offlineDatabase.pendingSales.update(queuedSale.id, { syncStatus: "syncing" });
+        await recordSale(queuedSale.payload);
+        await offlineDatabase.pendingSales.delete(queuedSale.id);
+      } catch {
+        await offlineDatabase.pendingSales.update(queuedSale.id, { syncStatus: "failed" });
+      }
+    }
+    setPendingSales(await offlineDatabase.pendingSales.count());
+  }
 
   useEffect(() => {
     const updateConnection = () => setIsOnline(window.navigator.onLine);
@@ -38,12 +54,16 @@ export default function PointOfSale() {
     updateConnection();
     void loadCatalog();
     void updatePendingSales();
+    const syncTask = window.setTimeout(() => void syncPendingSales(), 0);
     window.addEventListener("online", updateConnection);
     window.addEventListener("offline", updateConnection);
+    window.addEventListener("online", syncPendingSales);
 
     return () => {
       window.removeEventListener("online", updateConnection);
       window.removeEventListener("offline", updateConnection);
+      window.removeEventListener("online", syncPendingSales);
+      window.clearTimeout(syncTask);
     };
   }, []);
 
@@ -57,14 +77,30 @@ export default function PointOfSale() {
   async function startSale() {
     if (cart.length === 0) return;
 
-    await offlineDatabase.pendingSales.add({
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      payload: { items: cart, total },
-      syncStatus: isOnline ? "syncing" : "pending",
-    });
-    setPendingSales((count) => count + 1);
+    const payload = toSalePayload(crypto.randomUUID(), cart);
+    setSaleStatus(isOnline ? "Recording sale..." : "Saving sale offline...");
+
+    try {
+      if (!isOnline) throw new Error("offline");
+      await recordSale(payload);
+      setSaleStatus("Sale recorded");
+    } catch {
+      await offlineDatabase.pendingSales.put({
+        id: payload.saleId,
+        createdAt: new Date().toISOString(),
+        payload,
+        syncStatus: "pending",
+      });
+      setPendingSales((count) => count + 1);
+      setSaleStatus("Sale queued for sync");
+    }
     setCart([]);
+  }
+
+  async function retryPendingSales() {
+    setSaleStatus("Syncing queued sales...");
+    await syncPendingSales();
+    setSaleStatus("Sync complete");
   }
 
   async function signOut() {
@@ -86,6 +122,7 @@ export default function PointOfSale() {
             <span aria-hidden="true">&#9679;</span> {isOnline ? "Online" : "Offline"}
           </span>
           <span className="hidden text-[#69736b] sm:inline">{pendingSales} queued</span>
+          {pendingSales > 0 ? <button className="hidden text-[#c75c3b] sm:inline" onClick={() => void retryPendingSales()} type="button">Sync now</button> : null}
           <button aria-label="Sign out" className="text-[#69736b] transition hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button>
         </div>
       </header>
@@ -136,6 +173,7 @@ export default function PointOfSale() {
             <button className="mt-5 w-full bg-[#1d2a24] px-5 py-4 text-sm font-bold text-[#fffdf8] transition hover:bg-[#c75c3b] disabled:cursor-not-allowed disabled:bg-[#b5b8b2]" disabled={cart.length === 0} onClick={() => void startSale()}>
               {isOnline ? "Record sale" : "Queue sale offline"}
             </button>
+            {saleStatus ? <p className="mt-3 text-center text-xs text-[#69736b]">{saleStatus}</p> : null}
           </div>
         </aside>
       </div>

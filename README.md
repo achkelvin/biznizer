@@ -66,6 +66,12 @@ The `/pos` and `/catalog` routes require a Supabase session. Visit `/login` and 
 7. Sign out and sign in as the test user.
 8. Open `/catalog`: staff see a read-only catalog; managers can add products.
 
+### Sales and offline sync
+
+Run [the sales migration](supabase/migrations/20260913000100_sales.sql) after the catalog, role, and team migrations. It creates sales, sale items, atomic inventory deduction, and the `record_sale` function.
+
+The POS records sales directly when online. When offline, or when Supabase is temporarily unavailable, it stores the sale in IndexedDB and retries automatically when connectivity returns. You can also use **Sync now** beside the queued-sale count.
+
 ### Development
 
 ```bash
