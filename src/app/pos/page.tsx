@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { getCachedCatalog, refreshCatalog } from "@/lib/catalog/repository";
@@ -17,20 +17,37 @@ export default function PointOfSale() {
   const [pendingSales, setPendingSales] = useState(0);
   const [catalogStatus, setCatalogStatus] = useState<"loading" | "ready" | "cached">("loading");
   const [saleStatus, setSaleStatus] = useState("");
+  const syncInProgress = useRef(false);
 
-  async function syncPendingSales() {
-    const queuedSales = await offlineDatabase.pendingSales.where("syncStatus").equals("pending").toArray();
-    for (const queuedSale of queuedSales) {
-      try {
-        await offlineDatabase.pendingSales.update(queuedSale.id, { syncStatus: "syncing" });
-        await recordSale(queuedSale.payload);
-        await offlineDatabase.pendingSales.delete(queuedSale.id);
-      } catch {
-        await offlineDatabase.pendingSales.update(queuedSale.id, { syncStatus: "failed" });
+  const refreshQueuedCount = useCallback(async () => {
+    const queued = await offlineDatabase.pendingSales.toArray();
+    const count = queued.length;
+    setPendingSales(count);
+    return count;
+  }, []);
+
+  const syncPendingSales = useCallback(async () => {
+    if (syncInProgress.current || !window.navigator.onLine) return;
+    syncInProgress.current = true;
+
+    try {
+      await offlineDatabase.pendingSales.where("syncStatus").equals("syncing").modify({ syncStatus: "pending" });
+      const queuedSales = await offlineDatabase.pendingSales.toArray();
+      for (const queuedSale of queuedSales) {
+        if (queuedSale.syncStatus !== "pending" && queuedSale.syncStatus !== "failed") continue;
+        try {
+          await offlineDatabase.pendingSales.update(queuedSale.id, { syncStatus: "syncing" });
+          await recordSale(queuedSale.payload);
+          await offlineDatabase.pendingSales.delete(queuedSale.id);
+        } catch {
+          await offlineDatabase.pendingSales.update(queuedSale.id, { syncStatus: "failed" });
+        }
       }
+    } finally {
+      syncInProgress.current = false;
+      await refreshQueuedCount();
     }
-    setPendingSales(await offlineDatabase.pendingSales.count());
-  }
+  }, [refreshQueuedCount]);
 
   useEffect(() => {
     const updateConnection = () => setIsOnline(window.navigator.onLine);
@@ -49,23 +66,24 @@ export default function PointOfSale() {
         }
       }
     };
-    const updatePendingSales = async () => setPendingSales(await offlineDatabase.pendingSales.count());
 
     updateConnection();
     void loadCatalog();
-    void updatePendingSales();
+    const countTask = window.setTimeout(() => void refreshQueuedCount(), 0);
     const syncTask = window.setTimeout(() => void syncPendingSales(), 0);
     window.addEventListener("online", updateConnection);
     window.addEventListener("offline", updateConnection);
-    window.addEventListener("online", syncPendingSales);
+    const handleOnline = () => void syncPendingSales();
+    window.addEventListener("online", handleOnline);
 
     return () => {
       window.removeEventListener("online", updateConnection);
       window.removeEventListener("offline", updateConnection);
-      window.removeEventListener("online", syncPendingSales);
+      window.removeEventListener("online", handleOnline);
+      window.clearTimeout(countTask);
       window.clearTimeout(syncTask);
     };
-  }, []);
+  }, [refreshQueuedCount, syncPendingSales]);
 
   const total = cart.reduce((sum, product) => sum + product.price, 0);
 
@@ -91,7 +109,7 @@ export default function PointOfSale() {
         payload,
         syncStatus: "pending",
       });
-      setPendingSales((count) => count + 1);
+      await refreshQueuedCount();
       setSaleStatus("Sale queued for sync");
     }
     setCart([]);
@@ -100,7 +118,8 @@ export default function PointOfSale() {
   async function retryPendingSales() {
     setSaleStatus("Syncing queued sales...");
     await syncPendingSales();
-    setSaleStatus("Sync complete");
+    const remaining = await refreshQueuedCount();
+    setSaleStatus(remaining > 0 ? "Some sales still need attention" : "Sync complete");
   }
 
   async function signOut() {
@@ -117,6 +136,7 @@ export default function PointOfSale() {
         </div>
         <div className="flex items-center gap-4 text-sm">
           <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/catalog">Catalog</a>
+          <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/sales">Sales</a>
           <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/team">Team</a>
           <span className={isOnline ? "text-[#3d7457]" : "text-[#c75c3b]"}>
             <span aria-hidden="true">&#9679;</span> {isOnline ? "Online" : "Offline"}
