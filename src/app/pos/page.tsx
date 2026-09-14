@@ -139,6 +139,7 @@ export default function PointOfSale() {
         <div className="flex items-center gap-4 text-sm">
           <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/catalog">Catalog</a>
           <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/sales">Sales</Link>
+          <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/pricing">Pricing</Link>
           <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/team">Team</a>
           <span className={isOnline ? "text-[#3d7457]" : "text-[#c75c3b]"}>
             <span aria-hidden="true">&#9679;</span> {isOnline ? "Online" : "Offline"}

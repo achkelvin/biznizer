@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Variant Label Design Briefs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #262220;
+    --muted: #7d746c;
+    --hair: #e7e2da;
+    --paper: #fdfcfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+  }
+  .doc { max-width: 880px; margin: 0 auto; padding: 56px 48px 100px; }
+  .doc-header { text-align: center; margin-bottom: 64px; }
+  .doc-header .kicker {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+  }
+  .doc-header h1 {
+    font-family: 'Fraunces', serif; font-weight: 400; font-size: 34px; margin-top: 8px;
+  }
+
+  .variant { margin-bottom: 76px; padding-top: 40px; border-top: 1px solid var(--hair); }
+  .variant:first-of-type { border-top: none; }
+
+  .v-eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  .v-title { font-family: 'Fraunces', serif; font-weight: 400; font-size: 32px; margin-top: 6px; color: var(--ink); }
+  .v-meta { display: flex; gap: 18px; margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .v-quote {
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 17px; color: var(--ink);
+    margin-top: 18px; padding-left: 16px; border-left: 3px solid var(--accent);
+  }
+
+  .swatch-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 28px; }
+  .swatch { text-align: left; }
+  .swatch-color { width: 100%; aspect-ratio: 1; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); }
+  .swatch-label { font-size: 12px; font-weight: 500; margin-top: 6px; line-height: 1.3; }
+  .swatch-hex { font-size: 11px; color: var(--muted); font-family: monospace; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 28px; }
+  .block-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag { font-size: 12px; padding: 5px 12px; border-radius: 14px; background: var(--tag-bg); color: var(--accent); border: 1px solid var(--accent); }
+  .texture-list { font-size: 13px; line-height: 1.9; color: var(--ink); }
+  .texture-list li { margin-left: 18px; }
+
+  .pyramid { margin-top: 28px; }
+  .pyramid-row { display: grid; grid-template-columns: 90px 1fr; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--hair); font-size: 13px; }
+  .pyramid-row:last-child { border-bottom: none; }
+  .pyramid-layer { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); font-weight: 600; padding-top: 2px; }
+
+  .designer-note { margin-top: 26px; font-size: 12px; color: var(--muted); background: #f7f5f1; border-radius: 8px; padding: 12px 16px; }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-header">
+    <div class="kicker">Label design briefs</div>
+    <h1>Five Variant Concepts</h1>
+  </div>
+
+  <!-- 1. PINK VANILLA -->
+  <div class="variant" style="--accent:#B76E79; --tag-bg:#FFF3F5;">
+    <div class="v-eyebrow">Variant 01</div>
+    <div class="v-title">Pink Vanilla</div>
+    <div class="v-meta"><span>Character: Junie</span><span>·</span><span>Coquette gourmand</span></div>
+    <div class="v-quote">"Soft isn't the same as small."</div>
+
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-color" style="background:#FFD1DC;"></div><div class="swatch-label">Baby Pink</div><div class="swatch-hex">#FFD1DC</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#FFFDD0;"></div><div class="swatch-label">Whipped Cream White</div><div class="swatch-hex">#FFFDD0</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#B76E79;"></div><div class="swatch-label">Rose Gold Accent</div><div class="swatch-hex">#B76E79</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E3A857;"></div><div class="swatch-label">Sandalwood Gold</div><div class="swatch-hex">#E3A857</div></div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="block-label">Keywords</div>
+        <div class="tags">
+          <span class="tag">Coquette</span><span class="tag">Fluffy</span><span class="tag">Lactonic</span><span class="tag">Pastel</span><span class="tag">Playful Luxury</span><span class="tag">Dreamy</span>
+        </div>
+      </div>
+      <div>
+        <div class="block-label">Textures &amp; Visual Elements</div>
+        <ul class="texture-list">
+          <li>Whipped cream, soft satin, angora, crushed velvet</li>
+          <li>Vintage vanity mirror, orchids in morning light</li>
+          <li>Chilled berry cream, pastel sunset clouds</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pyramid">
+      <div class="block-label">Fragrance Pyramid</div>
+      <div class="pyramid-row"><span class="pyramid-layer">Top</span><span>Heliotrope, Orchid, Tangerine</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Heart</span><span>Tropical Fruits, Gourmand Accord</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Base</span><span>Vanilla, Musk, Sandalwood</span></div>
+    </div>
+  </div>
+
+  <!-- 2. BROWN PISTACHIO -->
+  <div class="variant" style="--accent:#8C6A2E; --tag-bg:#F6F1E6;">
+    <div class="v-eyebrow">Variant 02</div>
+    <div class="v-title">Brown Pistachio</div>
+    <div class="v-meta"><span>Character: Mila</span><span>·</span><span>Italian summer gourmand</span></div>
+    <div class="v-quote">"If it's not a little too much, what's the point?"</div>
+
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-color" style="background:#A3C1AD;"></div><div class="swatch-label">Pistachio Green</div><div class="swatch-hex">#A3C1AD</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#FFFDD0;"></div><div class="swatch-label">Whipped Cream White</div><div class="swatch-hex">#FFFDD0</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#C49A45;"></div><div class="swatch-label">Roasted Hazelnut Gold</div><div class="swatch-hex">#C49A45</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F8C8DC;"></div><div class="swatch-label">Marshmallow Pink</div><div class="swatch-hex">#F8C8DC</div></div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="block-label">Keywords</div>
+        <div class="tags">
+          <span class="tag">Decadent</span><span class="tag">Chilled</span><span class="tag">Nutty</span><span class="tag">Italian Summer</span><span class="tag">Playful Gourmand</span><span class="tag">Creamy Velvet</span>
+        </div>
+      </div>
+      <div>
+        <div class="block-label">Textures &amp; Visual Elements</div>
+        <ul class="texture-list">
+          <li>Gelato scoops, crushed pistachio dust, waffle cones</li>
+          <li>Italian gelateria, silver dessert coupes</li>
+          <li>Frosted pastel tiles, powdered sugar over berries</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pyramid">
+      <div class="block-label">Fragrance Pyramid</div>
+      <div class="pyramid-row"><span class="pyramid-layer">Top</span><span>Pistachio Gelato, Hazelnut, Cardamom, Rum</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Heart</span><span>White Peony, Fresh Pear, Raspberry, Jasmine</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Base</span><span>Whipped Cream, Marshmallow, Cotton Candy, Tonka</span></div>
+    </div>
+  </div>
+
+  <!-- 3. GOLDEN ARCHIPELAGO -->
+  <div class="variant" style="--accent:#A8842B; --tag-bg:#F5F1E6;">
+    <div class="v-eyebrow">Variant 03</div>
+    <div class="v-title">Golden Archipelago</div>
+    <div class="v-meta"><span>Character: Aris</span><span>·</span><span>Smoky-fruity power</span></div>
+    <div class="v-quote">"I don't perform confidence. I just stopped asking permission."</div>
+
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-color" style="background:#000000;"></div><div class="swatch-label">Signature Black</div><div class="swatch-hex">#000000</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#D4AF37; border:1px solid #c9a52f;"></div><div class="swatch-label">Victorious Gold</div><div class="swatch-hex">#D4AF37</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#4B0082;"></div><div class="swatch-label">Blackcurrant</div><div class="swatch-hex">#4B0082</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#4B5320;"></div><div class="swatch-label">Oakmoss Green</div><div class="swatch-hex">#4B5320</div></div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="block-label">Keywords</div>
+        <div class="tags">
+          <span class="tag">Conquering</span><span class="tag">Legacy</span><span class="tag">Visionary</span><span class="tag">Power</span><span class="tag">Success</span><span class="tag">Smoky-Fruity</span>
+        </div>
+      </div>
+      <div>
+        <div class="block-label">Textures &amp; Visual Elements</div>
+        <ul class="texture-list">
+          <li>Polished black marble, hand-tooled leather</li>
+          <li>Antique bronze, gunmetal steel, fine cashmere</li>
+          <li>Marble bust, empire map, city skyline at dawn</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pyramid">
+      <div class="block-label">Fragrance Pyramid</div>
+      <div class="pyramid-row"><span class="pyramid-layer">Top</span><span>Pineapple, Bergamot, Blackcurrant, Apple</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Heart</span><span>Birch, Patchouli, Jasmine, Rose</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Base</span><span>Oakmoss, Musk, Ambergris, Vanilla</span></div>
+    </div>
+
+    <div class="designer-note">Design note: keep the palette high-contrast (black/gold) as the dominant identity — treat the fruity accent colors as small detail moments only, not large fills, to avoid the label reading as busy.</div>
+  </div>
+
+  <!-- 4. GREY ROSE -->
+  <div class="variant" style="--accent:#8C5A2B; --tag-bg:#F3EEE6;">
+    <div class="v-eyebrow">Variant 04</div>
+    <div class="v-title">Grey Rose</div>
+    <div class="v-meta"><span>Character: Rook</span><span>·</span><span>Industrial dirty floral</span></div>
+    <div class="v-quote">"Pretty was never the point."</div>
+
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-color" style="background:#A08261;"></div><div class="swatch-label">Apothecary Kraft Brown</div><div class="swatch-hex">#A08261</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#9E6B6C;"></div><div class="swatch-label">Dusty Vintage Rose</div><div class="swatch-hex">#9E6B6C</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#363636;"></div><div class="swatch-label">Charcoal / Weathered Steel</div><div class="swatch-hex">#363636</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#8C5A2B;"></div><div class="swatch-label">Warm Amber &amp; Cedar</div><div class="swatch-hex">#8C5A2B</div></div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="block-label">Keywords</div>
+        <div class="tags">
+          <span class="tag">Industrial Chic</span><span class="tag">Wabi-Sabi</span><span class="tag">Dirty Rose</span><span class="tag">Smoky Wood</span><span class="tag">Raw Luxury</span>
+        </div>
+      </div>
+      <div>
+        <div class="block-label">Textures &amp; Visual Elements</div>
+        <ul class="texture-list">
+          <li>Unfinished concrete, weathered cedar planks</li>
+          <li>Typewritten label paper, distressed leather</li>
+          <li>Exposed brick loft, raw iron fixtures</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pyramid">
+      <div class="block-label">Fragrance Pyramid</div>
+      <div class="pyramid-row"><span class="pyramid-layer">Top</span><span>Centifolia Rose, Cumin</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Heart</span><span>Vetiver, Cedar, Musks</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Base</span><span>Guaiac Wood, Oud, Frankincense, Labdanum</span></div>
+    </div>
+
+    <div class="designer-note">Design note: label stock should feel raw/unfinished (kraft paper, uncoated) rather than glossy — the paper texture is doing as much brand work here as the color palette.</div>
+  </div>
+
+  <!-- 5. BURGUNDY MAGNOLIA -->
+  <div class="variant" style="--accent:#9A8AA6; --tag-bg:#F3F0F5;">
+    <div class="v-eyebrow">Variant 05</div>
+    <div class="v-title">Burgundy Magnolia</div>
+    <div class="v-meta"><span>Character: Wren</span><span>·</span><span>Desert minimalist floral</span></div>
+    <div class="v-quote">"I'm not hiding. I just don't need to be found."</div>
+
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-color" style="background:#E6D7C3;"></div><div class="swatch-label">Desert Dune Sand</div><div class="swatch-hex">#E6D7C3</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#D8CEE0;"></div><div class="swatch-label">Ghostly Violet</div><div class="swatch-hex">#D8CEE0</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F7F5EE; border:1px solid #e5e0d3;"></div><div class="swatch-label">Sun-Bleached Bone</div><div class="swatch-hex">#F7F5EE</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#C87D55;"></div><div class="swatch-label">Warm Terracotta</div><div class="swatch-hex">#C87D55</div></div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="block-label">Keywords</div>
+        <div class="tags">
+          <span class="tag">Ethereal</span><span class="tag">Arid Bloom</span><span class="tag">Translucent</span><span class="tag">Quiet Resilience</span><span class="tag">Soft Solitude</span>
+        </div>
+      </div>
+      <div>
+        <div class="block-label">Textures &amp; Visual Elements</div>
+        <ul class="texture-list">
+          <li>Windblown sand, sheer organza, frosted glass</li>
+          <li>Sun-bleached driftwood, powdery petals</li>
+          <li>Salt flats, modernist desert architecture</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pyramid">
+      <div class="block-label">Fragrance Pyramid</div>
+      <div class="pyramid-row"><span class="pyramid-layer">Top</span><span>Ambrette (Musk Mallow), Sapodilla</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Heart</span><span>Violet, Magnolia, Sandalwood</span></div>
+      <div class="pyramid-row"><span class="pyramid-layer">Base</span><span>Chantilly Musk, Crisp Amber, Cedarwood</span></div>
+    </div>
+
+    <div class="designer-note">Design note: name says "Burgundy" but the palette itself is pale/neutral (sand, violet, bone, terracotta) — flag with the team whether the name should shift to match, or a small burgundy accent should be deliberately introduced somewhere in the label.</div>
+  </div>
+
+</div>
+</body>
+</html>

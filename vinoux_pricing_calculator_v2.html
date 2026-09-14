@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vinoux Pricing Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:#FBF8F3; --sand:#F2EBE0; --clay:#A8763E; --clayDark:#8F6432;
+    --ink:#2B2420; --muted:#8A7F74; --hair:#E3D9C9; --good:#4A7C59; --warn:#B5541F;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; padding:24px 16px; }
+  .wrap { max-width: 980px; margin:0 auto; }
+  h1 { font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:26px; margin:0 0 4px; color:var(--clayDark); }
+  .subtitle { color:var(--muted); font-size:13px; margin:0 0 24px; }
+  .grid { display:grid; grid-template-columns:1fr; gap:16px; }
+  @media (min-width:760px){ .grid.cols2{ grid-template-columns:1fr 1fr; } .grid.cols3{ grid-template-columns:1fr 1fr 1fr; } }
+  .card { background:#fff; border:1px solid var(--hair); border-radius:14px; padding:20px; }
+  .card h2 { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin:0 0 14px; }
+  label { display:block; font-size:12px; font-weight:600; margin-top:12px; margin-bottom:4px; }
+  label:first-of-type{ margin-top:0; }
+  .hint { font-size:10px; color:var(--muted); font-weight:400; }
+  input[type=number] { width:100%; padding:9px 10px; border:1px solid var(--hair); border-radius:8px; font-size:13px; background:#fdfcfa; color:var(--ink); }
+  input:focus{ outline:2px solid var(--clay); outline-offset:-1px; }
+  .section-row { margin-top: 22px; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:14px; }
+  th,td { text-align:right; padding:9px 8px; border-bottom:1px solid var(--hair); }
+  th:first-child,td:first-child{ text-align:left; }
+  th { color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.4px; }
+  tr.ref-row td { background:var(--sand); font-weight:600; }
+  .margin-good{ color:var(--good); } .margin-warn{ color:var(--warn); }
+  .note { font-size:11px; color:var(--muted); margin-top:10px; line-height:1.6; }
+  .giving-badge { display:inline-block; background:#EEF3EC; color:var(--good); font-size:10px; padding:2px 8px; border-radius:10px; margin-left:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🧴 Vinoux Pricing Calculator</h1>
+  <p class="subtitle">Reference size: 50ml. Every cost is entered separately below, then scaled and totaled across all sizes automatically.</p>
+
+  <div class="grid cols3">
+    <div class="card">
+      <h2>Liquid Formula — per 50ml</h2>
+      <label>Fragrance oil cost (Rp)
+        <div class="hint">Cost of oil concentrate to make 50ml of finished liquid</div>
+      </label>
+      <input type="number" id="oilCost50" value="250000">
+      <label>Perfumer's alcohol cost (Rp)
+        <div class="hint">Alcohol/carrier cost to make 50ml of finished liquid</div>
+      </label>
+      <input type="number" id="alcoholCost50" value="50000">
+    </div>
+
+    <div class="card">
+      <h2>Packaging — per unit</h2>
+      <label>Bottle (glass) cost (Rp)</label>
+      <input type="number" id="bottleCost" value="12000">
+      <label>Cap / spray pump cost (Rp)</label>
+      <input type="number" id="capCost" value="5000">
+      <label>Label cost (Rp)</label>
+      <input type="number" id="labelCost" value="1500">
+      <label>Box cost (Rp)</label>
+      <input type="number" id="boxCost" value="5000">
+      <label>Insert card cost (Rp)</label>
+      <input type="number" id="cardCost" value="800">
+      <label>Seal sticker cost (Rp)</label>
+      <input type="number" id="sealCost" value="500">
+      <label>Twine / string cost (Rp)</label>
+      <input type="number" id="twineCost" value="300">
+    </div>
+
+    <div class="card">
+      <h2>Unpredictable Costs</h2>
+      <label>Contingency buffer (%)
+        <div class="hint">Covers spillage, waste, breakage, price swings — applied on top of every cost below</div>
+      </label>
+      <input type="number" id="bufferPct" value="10">
+
+      <div class="section-row">
+        <h2>Overhead</h2>
+        <label>Fixed monthly costs (Rp)
+          <div class="hint">Marketplace fees, stall rent, etc.</div>
+        </label>
+        <input type="number" id="fixedMonthly" value="300000">
+        <label>Estimated units made per month</label>
+        <input type="number" id="unitsPerMonth" value="60">
+      </div>
+    </div>
+  </div>
+
+  <div class="grid cols2" style="margin-top:16px;">
+    <div class="card">
+      <h2>Target Profit Margin</h2>
+      <label>Margin on top of total cost (%)</label>
+      <input type="number" id="marginPct" value="50">
+    </div>
+    <div class="card">
+      <h2>Humanity &amp; Sustainability <span class="giving-badge">gives back</span></h2>
+      <label>Allocation of every sale (%)
+        <div class="hint">Set aside from revenue on every unit sold, before profit is counted</div>
+      </label>
+      <input type="number" id="givingPct" value="2">
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h2>Total Cost &amp; Price — Every Size</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Size</th><th>Liquid cost</th><th>Total cost</th><th>Suggested price</th>
+          <th>Giving fund</th><th>Net profit</th><th>Net margin</th>
+        </tr>
+      </thead>
+      <tbody id="sizeTable"></tbody>
+    </table>
+    <p class="note">
+      Packaging and overhead costs are applied flat across every size (a simplification) — for very small (5ml) or large (500ml+) formats, you may need real quotes since actual bottle/box materials differ by size in practice. Liquid cost is the only figure that scales precisely with volume. The 50ml row is highlighted as your reference size.
+    </p>
+  </div>
+</div>
+
+<script>
+const SIZES = [5, 10, 30, 50, 100, 250, 500];
+const fmt = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+
+function val(id){ return parseFloat(document.getElementById(id).value) || 0; }
+
+function calculate(){
+  const oil50 = val('oilCost50');
+  const alcohol50 = val('alcoholCost50');
+  const packaging = val('bottleCost')+val('capCost')+val('labelCost')+val('boxCost')+val('cardCost')+val('sealCost')+val('twineCost');
+  const bufferPct = val('bufferPct');
+  const fixedMonthly = val('fixedMonthly');
+  const unitsPerMonth = Math.max(1, val('unitsPerMonth'));
+  const marginPct = val('marginPct');
+  const givingPct = val('givingPct');
+
+  const overheadPerUnit = fixedMonthly / unitsPerMonth;
+
+  let rows = '';
+  SIZES.forEach(size => {
+    const liquidCost = (oil50 + alcohol50) * (size/50);
+    const subtotal = liquidCost + packaging;
+    const buffered = subtotal * (1 + bufferPct/100);
+    const totalCost = buffered + overheadPerUnit;
+
+    const marginDecimal = marginPct/100;
+    const suggestedPrice = marginDecimal < 1 ? totalCost/(1-marginDecimal) : totalCost*2;
+
+    const givingAmount = suggestedPrice * (givingPct/100);
+    const netProfit = suggestedPrice - totalCost - givingAmount;
+    const netMarginPct = suggestedPrice > 0 ? (netProfit/suggestedPrice)*100 : 0;
+
+    const isRef = size === 50 ? ' ref-row' : '';
+    const marginClass = netMarginPct >= 30 ? 'margin-good' : 'margin-warn';
+
+    rows += `<tr class="${isRef}">
+      <td>${size}ml</td>
+      <td>${fmt(liquidCost)}</td>
+      <td>${fmt(totalCost)}</td>
+      <td>${fmt(suggestedPrice)}</td>
+      <td>${fmt(givingAmount)}</td>
+      <td>${fmt(netProfit)}</td>
+      <td class="${marginClass}">${netMarginPct.toFixed(1)}%</td>
+    </tr>`;
+  });
+  document.getElementById('sizeTable').innerHTML = rows;
+}
+
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', calculate));
+calculate();
+</script>
+</body>
+</html>

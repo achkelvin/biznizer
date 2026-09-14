@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vinoux — Brand Style Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #F2EBE0;
+    --cream: #FBF8F3;
+    --clay: #A8763E;
+    --plum: #6E4C5E;
+    --sage: #7C8B6F;
+    --ink: #2B2420;
+    --muted: #8A7F74;
+    --hair: #E3D9C9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    padding: 0;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 64px 56px 80px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--hair);
+    padding-bottom: 28px;
+    margin-bottom: 48px;
+  }
+  .wordmark {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 52px;
+    letter-spacing: 2px;
+    color: var(--clay);
+  }
+  .doc-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .vine-rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 44px 0 20px;
+  }
+  .vine-rule svg { flex-shrink: 0; }
+  .vine-rule .line { flex: 1; height: 1px; background: var(--hair); }
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .essence {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--ink);
+    max-width: 620px;
+    margin-bottom: 8px;
+  }
+  .essence-meaning {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .swatch { text-align: left; }
+  .swatch-color {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.06);
+    margin-bottom: 8px;
+  }
+  .swatch-name { font-size: 12px; font-weight: 500; }
+  .swatch-hex { font-size: 11px; color: var(--muted); font-family: 'Inter', monospace; }
+
+  .type-specimen { margin-top: 16px; }
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-sample-display {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .type-sample-body {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .type-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    min-width: 130px;
+  }
+
+  .logo-box {
+    background: var(--sand);
+    border-radius: 10px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .logo-box .lock-word {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    letter-spacing: 4px;
+    color: var(--clay);
+  }
+  .logo-box .lock-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+  .clearspace-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .voice-table { margin-top: 16px; }
+  .voice-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: 13px;
+  }
+  .voice-row.head {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .voice-do { color: var(--sage); }
+  .voice-dont { color: var(--plum); }
+
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .chip {
+    font-size: 12px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--hair);
+    color: var(--ink);
+    background: var(--cream);
+  }
+
+  .mood-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+    height: 90px;
+  }
+  .mood-1 { background: linear-gradient(135deg, #EDE3D3, #D9C7AC); border-radius: 6px; }
+  .mood-2 { background: linear-gradient(135deg, #C9B79F, #A8763E); border-radius: 6px; }
+  .mood-3 { background: linear-gradient(135deg, #8B9481, #7C8B6F); border-radius: 6px; }
+  .mood-4 { background: linear-gradient(135deg, #7C6470, #6E4C5E); border-radius: 6px; }
+  .mood-caption {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--hair);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media print {
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="wordmark">vinoux</div>
+    <div class="doc-label">Brand style sheet<br>v1 — for designer handoff</div>
+  </header>
+
+  <div class="essence">"Soft. Lasting. Yours." — a fragrance brand for young, artsy
+  self-expression, built quietly instead of loudly, made to actually last.</div>
+  <div class="essence-meaning">Vinoux = vin (vintage, lasting) + doux (soft, gentle) — pronounced vee-NOO</div>
+
+  <div class="vine-rule">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M 20 6 C 15 6, 12 12, 17 15 C 21 18, 15 22, 11 19" fill="none" stroke="#A8763E" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="19" r="2" fill="#A8763E"/></svg>
+    <div class="section-title">Color palette</div>
+    <div class="line"></div>
+  </div>
+  <div class="swatches">
+    <div class="swatch"><div class="swatch-color" style="background:#FBF8F3;"></div><div class="swatch-name">Cream</div><div class="swatch-hex">#FBF8F3</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#F2EBE0;"></div><div class="swatch-name">Sand</div><div class="swatch-hex">#F2EBE0</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#A8763E;"></div><div class="swatch-name">Clay (accent)</div><div class="swatch-hex">#A8763E</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7C8B6F;"></div><div class="swatch-name">Sage</div><div class="swatch-hex">#7C8B6F</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#6E4C5E;"></div><div class="swatch-name">Plum</div><div class="swatch-hex">#6E4C5E</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#2B2420;"></div><div class="swatch-name">Ink</div><div class="swatch-hex">#2B2420</div></div>
+  </div>
+
+  <div class="vine-rule">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M 20 6 C 15 6, 12 12, 17 15 C 21 18, 15 22, 11 19" fill="none" stroke="#A8763E" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="19" r="2" fill="#A8763E"/></svg>
+    <div class="section-title">Typography</div>
+    <div class="line"></div>
+  </div>
+  <div class="type-specimen">
+    <div class="type-row">
+      <span class="type-label">Display / Fraunces</span>
+      <span class="type-sample-display">A quiet kind of lasting</span>
+    </div>
+    <div class="type-row">
+      <span class="type-label">Body / Inter</span>
+      <span class="type-sample-body">Small batch. Consciously sourced. Made to stay with you.</span>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top: 40px;">
+    <div>
+      <div class="vine-rule">
+        <svg width="28" height="28" viewBox="0 0 28 28"><path d="M 20 6 C 15 6, 12 12, 17 15 C 21 18, 15 22, 11 19" fill="none" stroke="#A8763E" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="19" r="2" fill="#A8763E"/></svg>
+        <div class="section-title">Logo lockup</div>
+        <div class="line"></div>
+      </div>
+      <div class="logo-box">
+        <svg width="40" height="40" viewBox="0 0 28 28"><path d="M 20 6 C 15 6, 12 12, 17 15 C 21 18, 15 22, 11 19" fill="none" stroke="#A8763E" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="19" r="2" fill="#A8763E"/></svg>
+        <div class="lock-word">vinoux</div>
+        <div class="lock-tag">S O F T &nbsp; L A S T I N G &nbsp; Y O U R S</div>
+      </div>
+      <div class="clearspace-note">Minimum clear space = height of the vine mark on all sides. Never stretch, outline, or recolor the wordmark.</div>
+    </div>
+
+    <div>
+      <div class="vine-rule">
+        <svg width="28" height="28" viewBox="0 0 28 28"><path d="M 20 6 C 15 6, 12 12, 17 15 C 21 18, 15 22, 11 19" fill="none" stroke="#A8763E" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="19" r="2" fill="#A8763E"/></svg>
+        <div class="section-title">Imagery mood</div>
+        <div class="line"></div>
+      </div>
+      <div class="mood-strip">
+        <div class="mood-1"></div>
+        <div class="mood-2"></div>
+        <div class="mood-3"></div>
+        <div class="mood-4"></div>
+      </div>
+      <div class="mood-caption">Natural light, muted tones, tactile textures — linen, raw paper, unfinished wood. No glossy studio lighting.</div>
+    </div>
+  </div>
+
+  <div class="vine-rule">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M 20 6 C 15 6, 12 12, 17 15 C 21 18, 15 22, 11 19" fill="none" stroke="#A8763E" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="19" r="2" fill="#A8763E"/></svg>
+    <div class="section-title">Voice</div>
+    <div class="line"></div>
+  </div>
+  <div class="voice-table">
+    <div class="voice-row head"><span>Do</span><span>Don't</span></div>
+    <div class="voice-row"><span class="voice-do">Speak softly, like a close friend</span><span class="voice-dont">Use hype language or exclamation marks</span></div>
+    <div class="voice-row"><span class="voice-do">Use tactile, sensory words</span><span class="voice-dont">Push aggressive sales language</span></div>
+    <div class="voice-row"><span class="voice-do">Be honest about process and imperfection</span><span class="voice-dont">Oversell claims about ingredients</span></div>
+  </div>
+
+  <div class="vine-rule">
+    <svg width="28" height="28" viewBox="0 0 28 28"><path d="M 20 6 C 15 6, 12 12, 17 15 C 21 18, 15 22, 11 19" fill="none" stroke="#A8763E" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="19" r="2" fill="#A8763E"/></svg>
+    <div class="section-title">Core values</div>
+    <div class="line"></div>
+  </div>
+  <div class="chips">
+    <div class="chip">Longevity</div>
+    <div class="chip">Softness as strength</div>
+    <div class="chip">Small-batch integrity</div>
+    <div class="chip">Conscious sourcing</div>
+  </div>
+
+  <footer>
+    <span>Vinoux — brand style sheet</span>
+    <span>Prepared for design handoff</span>
+  </footer>
+
+</div>
+</body>
+</html>

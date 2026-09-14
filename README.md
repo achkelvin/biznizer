@@ -72,6 +72,10 @@ Run [the sales migration](supabase/migrations/20260913000100_sales.sql) after th
 
 The POS records sales directly when online. When offline, or when Supabase is temporarily unavailable, it stores the sale in IndexedDB and retries automatically when connectivity returns. You can also use **Sync now** beside the queued-sale count.
 
+### Perfume pricing calculator
+
+Open `/pricing` from the POS to calculate perfume pricing from batch volume, bottle size, fragrance concentration, material costs, packaging, labor, overhead, and target margins. It produces cost per unit, wholesale price, retail price, tax-inclusive price, and a batch cost breakdown. The calculator is currently a local planning tool; saved pricing formulas can be persisted to Supabase in the next pricing milestone.
+
 ### Development
 
 ```bash
