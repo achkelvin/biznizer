@@ -15,7 +15,9 @@ export type SalePayload = {
   items: SaleLine[];
 };
 
-export function toSalePayload(saleId: string, products: CatalogProduct[]): SalePayload {
+export type PaymentMethod = SalePayload["paymentMethod"];
+
+export function toSalePayload(saleId: string, products: CatalogProduct[], paymentMethod: PaymentMethod): SalePayload {
   const quantities = new Map<string, SaleLine>();
   products.forEach((product) => {
     const existing = quantities.get(product.id);
@@ -29,7 +31,7 @@ export function toSalePayload(saleId: string, products: CatalogProduct[]): SaleP
   return {
     saleId,
     total: products.reduce((sum, product) => sum + product.price, 0),
-    paymentMethod: "cash",
+    paymentMethod,
     items: Array.from(quantities.values()),
   };
 }

@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { getCachedCatalog, refreshCatalog } from "@/lib/catalog/repository";
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { offlineDatabase } from "@/lib/offline/database";
-import { recordSale, toSalePayload } from "@/lib/sales/repository";
+import { recordSale, toSalePayload, type PaymentMethod } from "@/lib/sales/repository";
 import { createClient } from "@/lib/supabase/client";
 
 export default function PointOfSale() {
@@ -17,6 +18,7 @@ export default function PointOfSale() {
   const [pendingSales, setPendingSales] = useState(0);
   const [catalogStatus, setCatalogStatus] = useState<"loading" | "ready" | "cached">("loading");
   const [saleStatus, setSaleStatus] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const syncInProgress = useRef(false);
 
   const refreshQueuedCount = useCallback(async () => {
@@ -95,7 +97,7 @@ export default function PointOfSale() {
   async function startSale() {
     if (cart.length === 0) return;
 
-    const payload = toSalePayload(crypto.randomUUID(), cart);
+    const payload = toSalePayload(crypto.randomUUID(), cart, paymentMethod);
     setSaleStatus(isOnline ? "Recording sale..." : "Saving sale offline...");
 
     try {
@@ -136,7 +138,7 @@ export default function PointOfSale() {
         </div>
         <div className="flex items-center gap-4 text-sm">
           <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/catalog">Catalog</a>
-          <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/sales">Sales</a>
+          <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/sales">Sales</Link>
           <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/team">Team</a>
           <span className={isOnline ? "text-[#3d7457]" : "text-[#c75c3b]"}>
             <span aria-hidden="true">&#9679;</span> {isOnline ? "Online" : "Offline"}
@@ -190,6 +192,11 @@ export default function PointOfSale() {
           </div>
           <div className="border-t border-[#d8d4ca] pt-5">
             <div className="flex justify-between text-lg font-semibold"><span>Total</span><span>${total}</span></div>
+            <div className="mt-5 grid grid-cols-3 border border-[#d8d4ca] bg-[#f4f1ea] p-1 text-sm" role="group" aria-label="Payment method">
+              {(["cash", "card", "other"] as const).map((method) => (
+                <button className={`px-2 py-3 capitalize transition ${paymentMethod === method ? "bg-[#1d2a24] text-[#fffdf8]" : "text-[#69736b] hover:text-[#1d2a24]"}`} key={method} onClick={() => setPaymentMethod(method)} type="button">{method}</button>
+              ))}
+            </div>
             <button className="mt-5 w-full bg-[#1d2a24] px-5 py-4 text-sm font-bold text-[#fffdf8] transition hover:bg-[#c75c3b] disabled:cursor-not-allowed disabled:bg-[#b5b8b2]" disabled={cart.length === 0} onClick={() => void startSale()}>
               {isOnline ? "Record sale" : "Queue sale offline"}
             </button>
