@@ -12,11 +12,14 @@ import {
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { getCurrentUserRole, type StoreRole } from "@/lib/supabase/auth";
 import { createClient } from "@/lib/supabase/client";
+import { LocaleControls } from "@/components/locale-controls";
+import { useLocale } from "@/lib/locale";
 
 const emptyForm = { name: "", sku: "", price: "", stock: "", categoryId: "" };
 
 export default function CatalogPage() {
   const router = useRouter();
+  const { formatMoney } = useLocale();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [categories, setCategories] = useState<CatalogCategory[]>([]);
   const [form, setForm] = useState(emptyForm);
@@ -76,7 +79,7 @@ export default function CatalogPage() {
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c75c3b]">Biznizer</p>
           <h1 className="mt-1 text-xl font-semibold">Catalog management</h1>
         </div>
-        <div className="flex items-center gap-5 text-sm"><a className="text-[#69736b] transition hover:text-[#c75c3b]" href="/pos">Back to POS</a><button className="text-[#69736b] transition hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button></div>
+        <div className="flex items-center gap-5 text-sm"><LocaleControls /><a className="text-[#69736b] transition hover:text-[#c75c3b]" href="/pos">Back to POS</a><button className="text-[#69736b] transition hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button></div>
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_340px]">
@@ -94,7 +97,7 @@ export default function CatalogPage() {
             </div>
             {products.length === 0 ? <p className="p-8 text-sm text-[#69736b]">No products found for this store.</p> : products.map((product) => (
               <div className="grid grid-cols-[1fr_110px_100px] items-center border-b border-[#eee9df] px-5 py-4 last:border-0" key={product.id}>
-                <div><p className="font-semibold">{product.name}</p><p className="text-sm text-[#69736b]">{product.category} · ${product.price.toFixed(2)}</p></div>
+                <div><p className="font-semibold">{product.name}</p><p className="text-sm text-[#69736b]">{product.category} · {formatMoney(product.price)}</p></div>
                 <span className="text-sm text-[#69736b]">{product.sku}</span>
                 <span className={`text-right text-sm font-semibold ${product.stock === 0 ? "text-[#c75c3b]" : ""}`}>{product.stock}</span>
               </div>

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 import { getRecentSales, type SaleRecord } from "@/lib/sales/history";
 import { createClient } from "@/lib/supabase/client";
+import { LocaleControls } from "@/components/locale-controls";
+import { useLocale } from "@/lib/locale";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
@@ -12,6 +14,7 @@ function formatDate(value: string) {
 
 export default function SalesPage() {
   const router = useRouter();
+  const { formatMoney } = useLocale();
   const [sales, setSales] = useState<SaleRecord[]>([]);
   const [status, setStatus] = useState("Loading sales...");
   const [range, setRange] = useState<"today" | "recent">("today");
@@ -45,14 +48,14 @@ export default function SalesPage() {
     <main className="min-h-full flex-1 bg-[#f4f1ea] text-[#1d2a24]">
       <header className="flex items-center justify-between border-b border-[#d8d4ca] bg-[#fffdf8] px-6 py-5 sm:px-10">
         <div><p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c75c3b]">Biznizer</p><h1 className="mt-1 text-xl font-semibold">Sales history</h1></div>
-        <div className="flex items-center gap-5 text-sm"><a className="text-[#69736b] hover:text-[#c75c3b]" href="/pos">Back to POS</a><button className="text-[#69736b] hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button></div>
+        <div className="flex items-center gap-5 text-sm"><LocaleControls /><a className="text-[#69736b] hover:text-[#c75c3b]" href="/pos">Back to POS</a><button className="text-[#69736b] hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button></div>
       </header>
       <div className="mx-auto max-w-5xl p-6 sm:p-10">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm text-[#69736b]">Main store</p><h2 className="mt-1 text-3xl font-semibold tracking-tight">Sales report</h2></div><div className="flex border border-[#d8d4ca] bg-[#fffdf8] p-1 text-sm"><button className={`px-4 py-2 ${range === "today" ? "bg-[#1d2a24] text-[#fffdf8]" : "text-[#69736b]"}`} onClick={() => setRange("today")} type="button">Today</button><button className={`px-4 py-2 ${range === "recent" ? "bg-[#1d2a24] text-[#fffdf8]" : "text-[#69736b]"}`} onClick={() => setRange("recent")} type="button">Recent</button></div></div>
-        <div className="mb-6 grid gap-3 sm:grid-cols-3"><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Revenue</p><p className="mt-2 text-2xl font-semibold">${total.toFixed(2)}</p></div><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Transactions</p><p className="mt-2 text-2xl font-semibold">{visibleSales.length}</p></div><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Average ticket</p><p className="mt-2 text-2xl font-semibold">${averageTicket.toFixed(2)}</p></div></div>
+        <div className="mb-6 grid gap-3 sm:grid-cols-3"><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Revenue</p><p className="mt-2 text-2xl font-semibold">{formatMoney(total)}</p></div><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Transactions</p><p className="mt-2 text-2xl font-semibold">{visibleSales.length}</p></div><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Average ticket</p><p className="mt-2 text-2xl font-semibold">{formatMoney(averageTicket)}</p></div></div>
         <div className="mb-4 flex items-center justify-between text-sm text-[#69736b]"><span>{status} · {range === "today" ? "today" : "last 50 sales"}</span><button className="text-[#c75c3b] hover:text-[#1d2a24]" onClick={() => void loadSales()} type="button">Refresh</button></div>
-        <div className="mb-6 flex gap-5 text-sm text-[#69736b]">{Object.entries(paymentTotals).map(([method, amount]) => <span className="capitalize" key={method}>{method}: <strong className="text-[#1d2a24]">${amount.toFixed(2)}</strong></span>)}</div>
-        <div className="overflow-hidden border border-[#d8d4ca] bg-[#fffdf8]"><div className="grid grid-cols-[1fr_150px_100px] border-b border-[#d8d4ca] px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#69736b]"><span>Sale</span><span>Payment</span><span className="text-right">Total</span></div>{visibleSales.length === 0 ? <p className="p-8 text-sm text-[#69736b]">No completed sales for this period.</p> : visibleSales.map((sale) => <a className="grid grid-cols-[1fr_150px_100px] items-center border-b border-[#eee9df] px-5 py-4 transition last:border-0 hover:bg-[#f4f1ea]" href={`/sales/${sale.id}`} key={sale.id}><div><p className="font-mono text-xs text-[#69736b]">{sale.id}</p><p className="mt-1 text-sm">{formatDate(sale.createdAt)}</p></div><span className="text-sm capitalize">{sale.paymentMethod}</span><span className="text-right font-semibold">${sale.total.toFixed(2)}</span></a>)}</div>
+        <div className="mb-6 flex gap-5 text-sm text-[#69736b]">{Object.entries(paymentTotals).map(([method, amount]) => <span className="capitalize" key={method}>{method}: <strong className="text-[#1d2a24]">{formatMoney(amount)}</strong></span>)}</div>
+        <div className="overflow-hidden border border-[#d8d4ca] bg-[#fffdf8]"><div className="grid grid-cols-[1fr_150px_100px] border-b border-[#d8d4ca] px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#69736b]"><span>Sale</span><span>Payment</span><span className="text-right">Total</span></div>{visibleSales.length === 0 ? <p className="p-8 text-sm text-[#69736b]">No completed sales for this period.</p> : visibleSales.map((sale) => <a className="grid grid-cols-[1fr_150px_100px] items-center border-b border-[#eee9df] px-5 py-4 transition last:border-0 hover:bg-[#f4f1ea]" href={`/sales/${sale.id}`} key={sale.id}><div><p className="font-mono text-xs text-[#69736b]">{sale.id}</p><p className="mt-1 text-sm">{formatDate(sale.createdAt)}</p></div><span className="text-sm capitalize">{sale.paymentMethod}</span><span className="text-right font-semibold">{formatMoney(sale.total)}</span></a>)}</div>
       </div>
     </main>
   );

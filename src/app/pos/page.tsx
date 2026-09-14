@@ -9,9 +9,12 @@ import type { CatalogProduct } from "@/lib/catalog/types";
 import { offlineDatabase } from "@/lib/offline/database";
 import { recordSale, toSalePayload, type PaymentMethod } from "@/lib/sales/repository";
 import { createClient } from "@/lib/supabase/client";
+import { LocaleControls } from "@/components/locale-controls";
+import { useLocale } from "@/lib/locale";
 
 export default function PointOfSale() {
   const router = useRouter();
+  const { formatMoney } = useLocale();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [cart, setCart] = useState<CatalogProduct[]>([]);
   const [isOnline, setIsOnline] = useState(true);
@@ -137,6 +140,7 @@ export default function PointOfSale() {
           <h1 className="mt-1 text-xl font-semibold">Point of sale</h1>
         </div>
         <div className="flex items-center gap-4 text-sm">
+          <LocaleControls />
           <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/catalog">Catalog</a>
           <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/sales">Sales</Link>
           <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/pricing">Pricing</Link>
@@ -167,7 +171,7 @@ export default function PointOfSale() {
                 <p className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-[#8b6b58]">{product.category}</p>
                 <div className="mt-1 flex items-center justify-between gap-4">
                   <span className="font-semibold">{product.name}</span>
-                  <span>${product.price}</span>
+                  <span>{formatMoney(product.price)}</span>
                 </div>
                 <p className="mt-2 text-xs text-[#69736b]">{product.stock === 0 ? "Out of stock" : `${product.stock} in stock`} · {product.sku}</p>
               </button>
@@ -186,13 +190,13 @@ export default function PointOfSale() {
             ) : (
               cart.map((product, index) => (
                 <div className="flex justify-between border-b border-[#eee9df] py-3 text-sm" key={`${product.id}-${index}`}>
-                  <span>{product.name}</span><span>${product.price}</span>
+                  <span>{product.name}</span><span>{formatMoney(product.price)}</span>
                 </div>
               ))
             )}
           </div>
           <div className="border-t border-[#d8d4ca] pt-5">
-            <div className="flex justify-between text-lg font-semibold"><span>Total</span><span>${total}</span></div>
+            <div className="flex justify-between text-lg font-semibold"><span>Total</span><span>{formatMoney(total)}</span></div>
             <div className="mt-5 grid grid-cols-3 border border-[#d8d4ca] bg-[#f4f1ea] p-1 text-sm" role="group" aria-label="Payment method">
               {(["cash", "card", "other"] as const).map((method) => (
                 <button className={`px-2 py-3 capitalize transition ${paymentMethod === method ? "bg-[#1d2a24] text-[#fffdf8]" : "text-[#69736b] hover:text-[#1d2a24]"}`} key={method} onClick={() => setPaymentMethod(method)} type="button">{method}</button>
