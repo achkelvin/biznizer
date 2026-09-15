@@ -13,9 +13,9 @@
   }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; padding:24px 16px; }
-  .wrap { max-width: 980px; margin:0 auto; }
+  .wrap { max-width: 1040px; margin:0 auto; }
   h1 { font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:26px; margin:0 0 4px; color:var(--clayDark); }
-  .subtitle { color:var(--muted); font-size:13px; margin:0 0 24px; }
+  .subtitle { color:var(--muted); font-size:13px; margin:0 0 24px; line-height:1.6; }
   .grid { display:grid; grid-template-columns:1fr; gap:16px; }
   @media (min-width:760px){ .grid.cols2{ grid-template-columns:1fr 1fr; } .grid.cols3{ grid-template-columns:1fr 1fr 1fr; } }
   .card { background:#fff; border:1px solid var(--hair); border-radius:14px; padding:20px; }
@@ -26,31 +26,29 @@
   input[type=number] { width:100%; padding:9px 10px; border:1px solid var(--hair); border-radius:8px; font-size:13px; background:#fdfcfa; color:var(--ink); }
   input:focus{ outline:2px solid var(--clay); outline-offset:-1px; }
   .section-row { margin-top: 22px; }
-  table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:14px; }
-  th,td { text-align:right; padding:9px 8px; border-bottom:1px solid var(--hair); }
+  table { width:100%; border-collapse:collapse; font-size:12px; margin-top:14px; }
+  th,td { text-align:right; padding:8px 7px; border-bottom:1px solid var(--hair); white-space:nowrap; }
   th:first-child,td:first-child{ text-align:left; }
-  th { color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.4px; }
+  th { color:var(--muted); font-weight:600; font-size:10.5px; text-transform:uppercase; letter-spacing:0.3px; }
   tr.ref-row td { background:var(--sand); font-weight:600; }
   .margin-good{ color:var(--good); } .margin-warn{ color:var(--warn); }
-  .note { font-size:11px; color:var(--muted); margin-top:10px; line-height:1.6; }
+  .note { font-size:11px; color:var(--muted); margin-top:10px; line-height:1.7; }
   .giving-badge { display:inline-block; background:#EEF3EC; color:var(--good); font-size:10px; padding:2px 8px; border-radius:10px; margin-left:6px; }
+  .curve-badge { display:inline-block; background:#F3EEE1; color:var(--clayDark); font-size:10px; padding:2px 8px; border-radius:10px; margin-left:6px; }
+  .table-wrap { overflow-x:auto; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🧴 Vinoux Pricing Calculator</h1>
-  <p class="subtitle">Reference size: 50ml. Every cost is entered separately below, then scaled and totaled across all sizes automatically.</p>
+  <p class="subtitle">Reference size: 50ml. Prices follow a volume discount curve — larger sizes cost less per ml, and refills skip the packaging cost entirely — modeled after real niche-fragrance market pricing patterns.</p>
 
   <div class="grid cols3">
     <div class="card">
       <h2>Liquid Formula — per 50ml</h2>
-      <label>Fragrance oil cost (Rp)
-        <div class="hint">Cost of oil concentrate to make 50ml of finished liquid</div>
-      </label>
+      <label>Fragrance oil cost (Rp)</label>
       <input type="number" id="oilCost50" value="250000">
-      <label>Perfumer's alcohol cost (Rp)
-        <div class="hint">Alcohol/carrier cost to make 50ml of finished liquid</div>
-      </label>
+      <label>Perfumer's alcohol cost (Rp)</label>
       <input type="number" id="alcoholCost50" value="50000">
     </div>
 
@@ -70,20 +68,18 @@
       <input type="number" id="sealCost" value="500">
       <label>Twine / string cost (Rp)</label>
       <input type="number" id="twineCost" value="300">
+      <div class="hint" style="margin-top:8px;">Refill pricing automatically skips all packaging costs above — only the bottle+cap you already own gets refilled.</div>
     </div>
 
     <div class="card">
       <h2>Unpredictable Costs</h2>
       <label>Contingency buffer (%)
-        <div class="hint">Covers spillage, waste, breakage, price swings — applied on top of every cost below</div>
+        <div class="hint">Covers spillage, waste, breakage, price swings</div>
       </label>
       <input type="number" id="bufferPct" value="10">
-
       <div class="section-row">
         <h2>Overhead</h2>
-        <label>Fixed monthly costs (Rp)
-          <div class="hint">Marketplace fees, stall rent, etc.</div>
-        </label>
+        <label>Fixed monthly costs (Rp)</label>
         <input type="number" id="fixedMonthly" value="300000">
         <label>Estimated units made per month</label>
         <input type="number" id="unitsPerMonth" value="60">
@@ -91,43 +87,54 @@
     </div>
   </div>
 
-  <div class="grid cols2" style="margin-top:16px;">
+  <div class="grid cols3" style="margin-top:16px;">
     <div class="card">
-      <h2>Target Profit Margin</h2>
+      <h2>Target Margin <span style="font-weight:400;">(at 50ml)</span></h2>
       <label>Margin on top of total cost (%)</label>
       <input type="number" id="marginPct" value="50">
     </div>
     <div class="card">
-      <h2>Humanity &amp; Sustainability <span class="giving-badge">gives back</span></h2>
-      <label>Allocation of every sale (%)
-        <div class="hint">Set aside from revenue on every unit sold, before profit is counted</div>
+      <h2>Volume Pricing Curve <span class="curve-badge">market pattern</span></h2>
+      <label>Discount exponent
+        <div class="hint">1.0 = flat linear pricing (no bulk discount). Lower = steeper discount for bigger sizes. Real-world niche fragrance pricing (the data you found) works out to ≈0.65 — profit grows slower than volume as size increases.</div>
       </label>
+      <input type="number" id="curveExp" value="0.65" step="0.01">
+    </div>
+    <div class="card">
+      <h2>Humanity &amp; Sustainability <span class="giving-badge">gives back</span></h2>
+      <label>Allocation of every sale (%)</label>
       <input type="number" id="givingPct" value="2">
     </div>
   </div>
 
   <div class="card" style="margin-top:16px;">
-    <h2>Total Cost &amp; Price — Every Size</h2>
+    <h2>Pricing — Every Size, New Bottle &amp; Refill</h2>
+    <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>Size</th><th>Liquid cost</th><th>Total cost</th><th>Suggested price</th>
+          <th>Size</th><th>Total cost</th><th>New price</th><th>Refill price</th>
           <th>Giving fund</th><th>Net profit</th><th>Net margin</th>
         </tr>
       </thead>
       <tbody id="sizeTable"></tbody>
     </table>
+    </div>
     <p class="note">
-      Packaging and overhead costs are applied flat across every size (a simplification) — for very small (5ml) or large (500ml+) formats, you may need real quotes since actual bottle/box materials differ by size in practice. Liquid cost is the only figure that scales precisely with volume. The 50ml row is highlighted as your reference size.
+      How this works: cost still scales precisely linear with volume (real materials cost is real). What changed is <strong>profit</strong> — instead of a flat percentage at every size, profit grows by size<sup>0.65</sup> instead of size<sup>1.0</sup>, so bigger bottles earn you more total profit but a smaller profit <em>percentage</em>, exactly like the market data you found. Refill price = cost without any packaging line items, plus the same profit curve. The 50ml row is your reference size, held fixed to match your target margin input exactly.
     </p>
   </div>
 </div>
 
 <script>
-const SIZES = [5, 10, 30, 50, 100, 250, 500];
+const SIZES = [5, 10, 15, 30, 50, 55, 100, 250, 500];
+const REF_SIZE = 50;
 const fmt = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
-
 function val(id){ return parseFloat(document.getElementById(id).value) || 0; }
+
+function liquidCostFor(size, oil50, alcohol50){
+  return (oil50 + alcohol50) * (size / 50);
+}
 
 function calculate(){
   const oil50 = val('oilCost50');
@@ -137,32 +144,52 @@ function calculate(){
   const fixedMonthly = val('fixedMonthly');
   const unitsPerMonth = Math.max(1, val('unitsPerMonth'));
   const marginPct = val('marginPct');
+  const curveExp = val('curveExp');
   const givingPct = val('givingPct');
 
   const overheadPerUnit = fixedMonthly / unitsPerMonth;
 
+  // total cost + profit at the 50ml reference size, to anchor the curve
+  const refLiquid = liquidCostFor(REF_SIZE, oil50, alcohol50);
+  const refSubtotal = refLiquid + packaging;
+  const refBuffered = refSubtotal * (1 + bufferPct/100);
+  const refTotalCost = refBuffered + overheadPerUnit;
+  const marginDecimal = marginPct/100;
+  const refPrice = marginDecimal < 1 ? refTotalCost/(1-marginDecimal) : refTotalCost*2;
+  const refProfit = refPrice - refTotalCost;
+
   let rows = '';
   SIZES.forEach(size => {
-    const liquidCost = (oil50 + alcohol50) * (size/50);
-    const subtotal = liquidCost + packaging;
-    const buffered = subtotal * (1 + bufferPct/100);
-    const totalCost = buffered + overheadPerUnit;
+    const liquidCost = liquidCostFor(size, oil50, alcohol50);
 
-    const marginDecimal = marginPct/100;
-    const suggestedPrice = marginDecimal < 1 ? totalCost/(1-marginDecimal) : totalCost*2;
+    // New bottle: liquid + packaging + buffer + overhead
+    const newSubtotal = liquidCost + packaging;
+    const newBuffered = newSubtotal * (1 + bufferPct/100);
+    const newTotalCost = newBuffered + overheadPerUnit;
 
-    const givingAmount = suggestedPrice * (givingPct/100);
-    const netProfit = suggestedPrice - totalCost - givingAmount;
-    const netMarginPct = suggestedPrice > 0 ? (netProfit/suggestedPrice)*100 : 0;
+    // Refill: liquid only + buffer + overhead, no packaging
+    const refillSubtotal = liquidCost;
+    const refillBuffered = refillSubtotal * (1 + bufferPct/100);
+    const refillTotalCost = refillBuffered + overheadPerUnit;
 
-    const isRef = size === 50 ? ' ref-row' : '';
-    const marginClass = netMarginPct >= 30 ? 'margin-good' : 'margin-warn';
+    // profit follows the curve relative to the reference size profit
+    const profit = refProfit * Math.pow(size / REF_SIZE, curveExp);
+
+    const newPrice = newTotalCost + profit;
+    const refillPrice = refillTotalCost + profit;
+
+    const givingAmount = newPrice * (givingPct/100);
+    const netProfit = newPrice - newTotalCost - givingAmount;
+    const netMarginPct = newPrice > 0 ? (netProfit/newPrice)*100 : 0;
+
+    const isRef = size === REF_SIZE ? ' ref-row' : '';
+    const marginClass = netMarginPct >= 25 ? 'margin-good' : 'margin-warn';
 
     rows += `<tr class="${isRef}">
       <td>${size}ml</td>
-      <td>${fmt(liquidCost)}</td>
-      <td>${fmt(totalCost)}</td>
-      <td>${fmt(suggestedPrice)}</td>
+      <td>${fmt(newTotalCost)}</td>
+      <td>${fmt(newPrice)}</td>
+      <td>${fmt(refillPrice)}</td>
       <td>${fmt(givingAmount)}</td>
       <td>${fmt(netProfit)}</td>
       <td class="${marginClass}">${netMarginPct.toFixed(1)}%</td>

@@ -9,6 +9,7 @@ import type { CatalogProduct } from "@/lib/catalog/types";
 import { offlineDatabase } from "@/lib/offline/database";
 import { recordSale, toSalePayload, type PaymentMethod } from "@/lib/sales/repository";
 import { createClient } from "@/lib/supabase/client";
+import { getCurrentUserRole, type StoreRole } from "@/lib/supabase/auth";
 import { LocaleControls } from "@/components/locale-controls";
 import { useLocale } from "@/lib/locale";
 
@@ -22,6 +23,8 @@ export default function PointOfSale() {
   const [catalogStatus, setCatalogStatus] = useState<"loading" | "ready" | "cached">("loading");
   const [saleStatus, setSaleStatus] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
+  const [role, setRole] = useState<StoreRole | null>(null);
+  const [accessNotice, setAccessNotice] = useState("");
   const syncInProgress = useRef(false);
 
   const refreshQueuedCount = useCallback(async () => {
@@ -55,6 +58,16 @@ export default function PointOfSale() {
   }, [refreshQueuedCount]);
 
   useEffect(() => {
+    const accessTask = window.setTimeout(() => {
+      if (new URLSearchParams(window.location.search).get("access") === "restricted") {
+        setAccessNotice("That workspace is restricted for your current role.");
+        router.replace("/pos");
+      }
+    }, 0);
+    return () => window.clearTimeout(accessTask);
+  }, [router]);
+
+  useEffect(() => {
     const updateConnection = () => setIsOnline(window.navigator.onLine);
     const loadCatalog = async () => {
       const cachedCatalog = await getCachedCatalog();
@@ -74,6 +87,7 @@ export default function PointOfSale() {
 
     updateConnection();
     void loadCatalog();
+    const roleTask = window.setTimeout(() => void getCurrentUserRole().then(setRole), 0);
     const countTask = window.setTimeout(() => void refreshQueuedCount(), 0);
     const syncTask = window.setTimeout(() => void syncPendingSales(), 0);
     window.addEventListener("online", updateConnection);
@@ -87,6 +101,7 @@ export default function PointOfSale() {
       window.removeEventListener("online", handleOnline);
       window.clearTimeout(countTask);
       window.clearTimeout(syncTask);
+      window.clearTimeout(roleTask);
     };
   }, [refreshQueuedCount, syncPendingSales]);
 
@@ -141,10 +156,11 @@ export default function PointOfSale() {
         </div>
         <div className="flex items-center gap-4 text-sm">
           <LocaleControls />
-          <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/catalog">Catalog</a>
+          {role === "owner" || role === "manager" ? <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/catalog">Catalog</a> : null}
           <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/sales">Sales</Link>
-          <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/pricing">Pricing</Link>
-          <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/team">Team</a>
+          {role === "owner" || role === "manager" ? <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/pricing">Pricing</Link> : null}
+          {role === "owner" || role === "manager" ? <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/production">Production</Link> : null}
+          {role === "owner" ? <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/team">Team</a> : null}
           <span className={isOnline ? "text-[#3d7457]" : "text-[#c75c3b]"}>
             <span aria-hidden="true">&#9679;</span> {isOnline ? "Online" : "Offline"}
           </span>
@@ -155,6 +171,7 @@ export default function PointOfSale() {
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_360px]">
+        {accessNotice ? <p className="col-span-full border border-[#e6c8b9] bg-[#fff4ef] px-4 py-3 text-sm text-[#a14f35]">{accessNotice}</p> : null}
         <section>
           <div className="mb-6 flex items-end justify-between">
             <div>

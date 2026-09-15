@@ -76,6 +76,10 @@ The POS records sales directly when online. When offline, or when Supabase is te
 
 Open `/pricing` from the POS to calculate perfume pricing from batch volume, bottle size, fragrance concentration, material costs, packaging, labor, overhead, and target margins. It produces cost per unit, wholesale price, retail price, tax-inclusive price, and a batch cost breakdown. The calculator is currently a local planning tool; saved pricing formulas can be persisted to Supabase in the next pricing milestone.
 
+### Production batches
+
+Run [the production migration](supabase/migrations/20260915000100_production_batches.sql) after the existing migrations. Managers and owners can open `/production` to plan scent quantities, note-pyramid percentages, concentration, buffers, packaging, tools, materials, and costs, then save a production batch log.
+
 ### Development
 
 ```bash

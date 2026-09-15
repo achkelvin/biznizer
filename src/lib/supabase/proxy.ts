@@ -2,6 +2,15 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getPublicEnv } from "@/lib/env";
+import { getStoreId } from "@/lib/env";
+
+type StoreRole = "owner" | "manager" | "staff";
+
+function roleCanAccess(role: StoreRole | null, pathname: string) {
+  if (pathname.startsWith("/team")) return role === "owner";
+  if (pathname.startsWith("/catalog") || pathname.startsWith("/pricing") || pathname.startsWith("/production")) return role === "owner" || role === "manager";
+  return true;
+}
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -31,6 +40,21 @@ export async function updateSession(request: NextRequest) {
 
   if (user && isAuthRoute) {
     return NextResponse.redirect(new URL("/pos", request.url));
+  }
+
+  if (user && !isAuthRoute) {
+    const storeId = getStoreId();
+    let role: StoreRole | null = null;
+    if (storeId) {
+      const { data: roleFromDatabase } = await supabase.rpc("store_member_role", { target_store_id: storeId });
+      if (roleFromDatabase === "owner" || roleFromDatabase === "manager" || roleFromDatabase === "staff") role = roleFromDatabase;
+    }
+
+    if (!roleCanAccess(role, request.nextUrl.pathname)) {
+      const allowedUrl = new URL("/pos", request.url);
+      allowedUrl.searchParams.set("access", "restricted");
+      return NextResponse.redirect(allowedUrl);
+    }
   }
 
   return response;
