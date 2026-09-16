@@ -1,8 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f1ea;
-  --foreground: #1d2a24;
+  --background: #f5f1ea;
+  --panel: #fffdf9;
+  --panel-alt: #f6f1eb;
+  --foreground: #1e2a23;
+  --muted: #5d665f;
+  --line: #e5ddd2;
+  --brand: #c75c3b;
+  --brand-soft: #f5e3d8;
+  --success: #226d54;
+  --warning: #a14f35;
 }
 
 @theme inline {
@@ -12,8 +20,51 @@
   --font-mono: var(--font-geist-mono);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-[#f5f1ea] text-[#1e2a23] antialiased;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  a {
+    @apply no-underline;
+  }
+}
+
+@layer components {
+  .surface {
+    @apply rounded-2xl border border-[#e6ddd0] bg-[#fffdf9] shadow-[0_10px_30px_rgba(30,42,35,0.04)];
+  }
+
+  .surface-soft {
+    @apply rounded-2xl border border-[#eadfd2] bg-[#f8f2eb];
+  }
+
+  .nav-link {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-[#5d665f] transition hover:bg-[#f2e8df] hover:text-[#1e2a23];
+  }
+
+  .primary-btn {
+    @apply inline-flex items-center justify-center rounded-xl bg-[#1e2a23] px-4 py-3 text-sm font-semibold text-[#fffdf9] transition hover:bg-[#c75c3b] disabled:cursor-not-allowed disabled:bg-[#b7b2aa];
+  }
+
+  .secondary-btn {
+    @apply inline-flex items-center justify-center rounded-xl border border-[#d9cfc2] bg-[#fffdf9] px-4 py-3 text-sm font-semibold text-[#1e2a23] transition hover:border-[#c75c3b] hover:text-[#c75c3b];
+  }
+
+  .input-field {
+    @apply mt-2 w-full rounded-xl border border-[#e6ddd0] bg-[#f6f1eb] px-3 py-3 text-sm text-[#1e2a23] outline-none transition placeholder:text-[#8a8178] focus:border-[#1e2a23] focus:bg-white focus:ring-2 focus:ring-[#c75c3b]/15;
+  }
+
+  .metric-card {
+    @apply rounded-2xl border border-[#eadfd2] bg-[#f8f2eb] p-5;
+  }
 }

@@ -8,7 +8,7 @@ type StoreRole = "owner" | "manager" | "staff";
 
 function roleCanAccess(role: StoreRole | null, pathname: string) {
   if (pathname.startsWith("/team")) return role === "owner";
-  if (pathname.startsWith("/catalog") || pathname.startsWith("/pricing") || pathname.startsWith("/production")) return role === "owner" || role === "manager";
+  if (pathname.startsWith("/catalog") || pathname.startsWith("/pricing") || pathname.startsWith("/production") || pathname.startsWith("/inventory")) return role === "owner" || role === "manager";
   return true;
 }
 

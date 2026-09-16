@@ -160,6 +160,7 @@ export default function PointOfSale() {
           <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/sales">Sales</Link>
           {role === "owner" || role === "manager" ? <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/pricing">Pricing</Link> : null}
           {role === "owner" || role === "manager" ? <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/production">Production</Link> : null}
+          {role === "owner" || role === "manager" ? <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/inventory">Inventory</Link> : null}
           {role === "owner" ? <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/team">Team</a> : null}
           <span className={isOnline ? "text-[#3d7457]" : "text-[#c75c3b]"}>
             <span aria-hidden="true">&#9679;</span> {isOnline ? "Online" : "Offline"}
