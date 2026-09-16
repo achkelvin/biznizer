@@ -148,82 +148,100 @@ export default function PointOfSale() {
   }
 
   return (
-    <main className="min-h-full flex-1 bg-[#f4f1ea] text-[#1d2a24]">
-      <header className="flex items-center justify-between border-b border-[#d8d4ca] bg-[#fffdf8] px-6 py-5 sm:px-10">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c75c3b]">Biznizer</p>
-          <h1 className="mt-1 text-xl font-semibold">Point of sale</h1>
-        </div>
-        <div className="flex items-center gap-4 text-sm">
-          <LocaleControls />
-          {role === "owner" || role === "manager" ? <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/catalog">Catalog</a> : null}
-          <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/sales">Sales</Link>
-          {role === "owner" || role === "manager" ? <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/pricing">Pricing</Link> : null}
-          {role === "owner" || role === "manager" ? <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/production">Production</Link> : null}
-          {role === "owner" || role === "manager" ? <Link className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/inventory">Inventory</Link> : null}
-          {role === "owner" ? <a className="hidden text-[#69736b] transition hover:text-[#c75c3b] sm:inline" href="/team">Team</a> : null}
-          <span className={isOnline ? "text-[#3d7457]" : "text-[#c75c3b]"}>
-            <span aria-hidden="true">&#9679;</span> {isOnline ? "Online" : "Offline"}
-          </span>
-          <span className="hidden text-[#69736b] sm:inline">{pendingSales} queued</span>
-          {pendingSales > 0 ? <button className="hidden text-[#c75c3b] sm:inline" onClick={() => void retryPendingSales()} type="button">Sync now</button> : null}
-          <button aria-label="Sign out" className="text-[#69736b] transition hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button>
+    <main className="min-h-full flex-1 bg-[#f5f1ea] text-[#1e2a23]">
+      <header className="border-b border-[#e6ddd0] bg-[#fffdf9] px-6 py-5 shadow-[0_6px_18px_rgba(30,42,35,0.02)] sm:px-10">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#c75c3b]">Biznizer</p>
+            <h1 className="mt-1 text-xl font-semibold text-[#1e2a23]">Point of sale</h1>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm sm:gap-3">
+            <LocaleControls />
+            {role === "owner" || role === "manager" ? <a className="nav-link hidden sm:inline-flex" href="/catalog">Catalog</a> : null}
+            <Link className="nav-link hidden sm:inline-flex" href="/sales">Sales</Link>
+            {role === "owner" || role === "manager" ? <Link className="nav-link hidden sm:inline-flex" href="/pricing">Pricing</Link> : null}
+            {role === "owner" || role === "manager" ? <Link className="nav-link hidden sm:inline-flex" href="/production">Production</Link> : null}
+            {role === "owner" || role === "manager" ? <Link className="nav-link hidden sm:inline-flex" href="/inventory">Inventory</Link> : null}
+            {role === "owner" ? <a className="nav-link hidden sm:inline-flex" href="/team">Team</a> : null}
+            <span className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium ${isOnline ? "bg-[#eaf4ef] text-[#226d54]" : "bg-[#fbeae5] text-[#a14f35]"}`}>
+              <span aria-hidden="true">●</span>
+              {isOnline ? "Online" : "Offline"}
+            </span>
+            <span className="hidden rounded-full bg-[#f5e3d8] px-2.5 py-1 text-xs font-medium text-[#a14f35] sm:inline-flex">{pendingSales} queued</span>
+            {pendingSales > 0 ? <button className="hidden text-[#a14f35] sm:inline-flex" onClick={() => void retryPendingSales()} type="button">Sync now</button> : null}
+            <button aria-label="Sign out" className="nav-link" onClick={() => void signOut()} type="button">Sign out</button>
+          </div>
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_360px]">
-        {accessNotice ? <p className="col-span-full border border-[#e6c8b9] bg-[#fff4ef] px-4 py-3 text-sm text-[#a14f35]">{accessNotice}</p> : null}
-        <section>
-          <div className="mb-6 flex items-end justify-between">
+      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1.2fr_360px]">
+        {accessNotice ? <p className="col-span-full rounded-2xl border border-[#f0d4ca] bg-[#fff3ee] px-4 py-3 text-sm text-[#a14f35]">{accessNotice}</p> : null}
+
+        <section className="surface p-5 sm:p-6">
+          <div className="mb-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm text-[#69736b]">Main store</p>
-              <h2 className="mt-1 text-3xl font-semibold tracking-tight">Choose a product</h2>
+              <p className="text-sm text-[#5d665f]">Main store</p>
+              <h2 className="mt-1 text-3xl font-semibold tracking-tight text-[#1e2a23]">Choose a product</h2>
             </div>
-            <span className="text-sm text-[#69736b]">{products.length} available</span>
+            <span className="rounded-full bg-[#f5e3d8] px-2.5 py-1 text-xs font-medium text-[#a14f35]">{products.length} available</span>
           </div>
-          <div className="mb-4 text-xs text-[#69736b]">{catalogStatus === "loading" ? "Loading catalog..." : catalogStatus === "cached" ? "Using cached catalog" : "Catalog synced"}</div>
+
+          <div className="mb-4 text-xs font-medium uppercase tracking-[0.16em] text-[#69736b]">
+            {catalogStatus === "loading" ? "Loading catalog..." : catalogStatus === "cached" ? "Using cached catalog" : "Catalog synced"}
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2">
             {products.map((product) => (
-              <button className="group border border-[#d8d4ca] bg-[#fffdf8] p-5 text-left transition hover:-translate-y-1 hover:border-[#c75c3b] disabled:cursor-not-allowed disabled:opacity-55" disabled={product.stock === 0} key={product.id} onClick={() => addToCart(product)}>
-                <div className="flex aspect-[4/3] items-end bg-[#e8dfd2] p-4 text-4xl font-semibold text-[#c75c3b] transition group-hover:bg-[#ead4c6]">{product.name.slice(0, 1)}</div>
-                <p className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-[#8b6b58]">{product.category}</p>
-                <div className="mt-1 flex items-center justify-between gap-4">
-                  <span className="font-semibold">{product.name}</span>
-                  <span>{formatMoney(product.price)}</span>
+              <button className="group rounded-2xl border border-[#e6ddd0] bg-[#fffdf9] p-4 text-left transition duration-200 hover:-translate-y-0.5 hover:border-[#c75c3b] hover:shadow-[0_10px_24px_rgba(199,92,59,0.08)] disabled:cursor-not-allowed disabled:opacity-40" disabled={product.stock === 0} key={product.id} onClick={() => addToCart(product)}>
+                <div className="flex aspect-[4/3] items-end rounded-xl bg-[#efe4d8] p-4 text-4xl font-semibold text-[#c75c3b] transition group-hover:bg-[#f3d7c8]">{product.name.slice(0, 1)}</div>
+                <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b6b58]">{product.category}</p>
+                <div className="mt-2 flex items-center justify-between gap-4">
+                  <span className="font-semibold text-[#1e2a23]">{product.name}</span>
+                  <span className="text-sm font-medium text-[#1e2a23]">{formatMoney(product.price)}</span>
                 </div>
-                <p className="mt-2 text-xs text-[#69736b]">{product.stock === 0 ? "Out of stock" : `${product.stock} in stock`} · {product.sku}</p>
+                <p className="mt-2 text-xs text-[#5d665f]">{product.stock === 0 ? "Out of stock" : `${product.stock} in stock`} · {product.sku}</p>
               </button>
             ))}
           </div>
         </section>
 
-        <aside className="flex h-fit flex-col border border-[#d8d4ca] bg-[#fffdf8] p-6 lg:sticky lg:top-6">
-          <div className="flex items-center justify-between border-b border-[#d8d4ca] pb-5">
-            <h2 className="text-xl font-semibold">Current sale</h2>
-            <span className="text-sm text-[#69736b]">{cart.length} items</span>
+        <aside className="surface flex h-fit flex-col p-5 sm:p-6 lg:sticky lg:top-6">
+          <div className="flex items-center justify-between border-b border-[#e6ddd0] pb-4">
+            <h2 className="text-xl font-semibold text-[#1e2a23]">Current sale</h2>
+            <span className="rounded-full bg-[#f5e3d8] px-2.5 py-1 text-xs font-medium text-[#a14f35]">{cart.length} items</span>
           </div>
+
           <div className="min-h-48 flex-1 py-4">
             {cart.length === 0 ? (
-              <p className="py-14 text-center text-sm text-[#69736b]">Add a product to begin.</p>
+              <p className="py-14 text-center text-sm text-[#5d665f]">Add a product to begin.</p>
             ) : (
               cart.map((product, index) => (
-                <div className="flex justify-between border-b border-[#eee9df] py-3 text-sm" key={`${product.id}-${index}`}>
-                  <span>{product.name}</span><span>{formatMoney(product.price)}</span>
+                <div className="flex items-center justify-between border-b border-[#efe8e1] py-3 text-sm" key={`${product.id}-${index}`}>
+                  <span className="text-[#1e2a23]">{product.name}</span>
+                  <span className="font-medium text-[#1e2a23]">{formatMoney(product.price)}</span>
                 </div>
               ))
             )}
           </div>
-          <div className="border-t border-[#d8d4ca] pt-5">
-            <div className="flex justify-between text-lg font-semibold"><span>Total</span><span>{formatMoney(total)}</span></div>
-            <div className="mt-5 grid grid-cols-3 border border-[#d8d4ca] bg-[#f4f1ea] p-1 text-sm" role="group" aria-label="Payment method">
+
+          <div className="border-t border-[#e6ddd0] pt-5">
+            <div className="flex items-center justify-between text-lg font-semibold text-[#1e2a23]">
+              <span>Total</span>
+              <span>{formatMoney(total)}</span>
+            </div>
+
+            <div className="mt-5 grid grid-cols-3 overflow-hidden rounded-xl border border-[#e6ddd0] bg-[#f6f1eb] text-sm" role="group" aria-label="Payment method">
               {(["cash", "card", "other"] as const).map((method) => (
-                <button className={`px-2 py-3 capitalize transition ${paymentMethod === method ? "bg-[#1d2a24] text-[#fffdf8]" : "text-[#69736b] hover:text-[#1d2a24]"}`} key={method} onClick={() => setPaymentMethod(method)} type="button">{method}</button>
+                <button className={`px-2 py-3 capitalize transition ${paymentMethod === method ? "bg-[#1e2a23] text-[#fffdf9]" : "text-[#5d665f] hover:text-[#1e2a23]"}`} key={method} onClick={() => setPaymentMethod(method)} type="button">{method}</button>
               ))}
             </div>
-            <button className="mt-5 w-full bg-[#1d2a24] px-5 py-4 text-sm font-bold text-[#fffdf8] transition hover:bg-[#c75c3b] disabled:cursor-not-allowed disabled:bg-[#b5b8b2]" disabled={cart.length === 0} onClick={() => void startSale()}>
+
+            <button className="primary-btn mt-5 w-full py-4" disabled={cart.length === 0} onClick={() => void startSale()}>
               {isOnline ? "Record sale" : "Queue sale offline"}
             </button>
-            {saleStatus ? <p className="mt-3 text-center text-xs text-[#69736b]">{saleStatus}</p> : null}
+
+            {saleStatus ? <p className="mt-3 text-center text-xs text-[#5d665f]">{saleStatus}</p> : null}
           </div>
         </aside>
       </div>
