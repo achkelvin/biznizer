@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { AppNav } from "@/components/top-nav";
 import { getRecentSales, type SaleRecord } from "@/lib/sales/history";
 import { createClient } from "@/lib/supabase/client";
-import { LocaleControls } from "@/components/locale-controls";
 import { useLocale } from "@/lib/locale";
 
 function formatDate(value: string) {
@@ -45,11 +45,16 @@ export default function SalesPage() {
   const paymentTotals = visibleSales.reduce<Record<string, number>>((totals, sale) => ({ ...totals, [sale.paymentMethod]: (totals[sale.paymentMethod] ?? 0) + sale.total }), {});
 
   return (
-    <main className="min-h-full flex-1 bg-[#f4f1ea] text-[#1d2a24]">
-      <header className="flex items-center justify-between border-b border-[#d8d4ca] bg-[#fffdf8] px-6 py-5 sm:px-10">
-        <div><p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c75c3b]">Biznizer</p><h1 className="mt-1 text-xl font-semibold">Sales history</h1></div>
-        <div className="flex items-center gap-5 text-sm"><LocaleControls /><a className="text-[#69736b] hover:text-[#c75c3b]" href="/pos">Back to POS</a><button className="text-[#69736b] hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button></div>
-      </header>
+    <main className="min-h-full flex-1 bg-[#f4f1ea] text-[#1d2a23]">
+      <AppNav
+        title="Sales history"
+        right={
+          <>
+            <a className="nav-link" href="/pos">Back to POS</a>
+            <button className="nav-link" onClick={() => void signOut()} type="button">Sign out</button>
+          </>
+        }
+      />
       <div className="mx-auto max-w-5xl p-6 sm:p-10">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm text-[#69736b]">Main store</p><h2 className="mt-1 text-3xl font-semibold tracking-tight">Sales report</h2></div><div className="flex border border-[#d8d4ca] bg-[#fffdf8] p-1 text-sm"><button className={`px-4 py-2 ${range === "today" ? "bg-[#1d2a24] text-[#fffdf8]" : "text-[#69736b]"}`} onClick={() => setRange("today")} type="button">Today</button><button className={`px-4 py-2 ${range === "recent" ? "bg-[#1d2a24] text-[#fffdf8]" : "text-[#69736b]"}`} onClick={() => setRange("recent")} type="button">Recent</button></div></div>
         <div className="mb-6 grid gap-3 sm:grid-cols-3"><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Revenue</p><p className="mt-2 text-2xl font-semibold">{formatMoney(total)}</p></div><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Transactions</p><p className="mt-2 text-2xl font-semibold">{visibleSales.length}</p></div><div className="border border-[#d8d4ca] bg-[#fffdf8] p-5"><p className="text-xs uppercase tracking-[0.14em] text-[#69736b]">Average ticket</p><p className="mt-2 text-2xl font-semibold">{formatMoney(averageTicket)}</p></div></div>

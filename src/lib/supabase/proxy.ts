@@ -12,6 +12,20 @@ function roleCanAccess(role: StoreRole | null, pathname: string) {
   return true;
 }
 
+function clearAuthCookies(request: NextRequest, response: NextResponse) {
+  request.cookies.getAll().forEach((cookie) => {
+    if (cookie.name.startsWith("sb-") || cookie.name.includes("supabase") || cookie.name.includes("auth-token")) {
+      response.cookies.delete(cookie.name);
+    }
+  });
+}
+
+function isStaleSessionError(error: unknown) {
+  if (!error || typeof error !== "object") return false;
+  const message = "message" in error ? String((error as { message?: string }).message ?? "").toLowerCase() : "";
+  return ["refresh token", "invalid refresh", "invalid token", "session not found", "jwt", "token expired", "auth session"].some((needle) => message.includes(needle));
+}
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const env = getPublicEnv();
@@ -28,8 +42,19 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
   const isAuthRoute = request.nextUrl.pathname === "/login";
+
+  if (userError && isStaleSessionError(userError)) {
+    clearAuthCookies(request, response);
+    if (!isAuthRoute) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/login";
+      loginUrl.searchParams.set("next", request.nextUrl.pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    return response;
+  }
 
   if (!user && !isAuthRoute) {
     const loginUrl = request.nextUrl.clone();

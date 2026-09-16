@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { LocaleControls } from "@/components/locale-controls";
+
+import { AppNav } from "@/components/top-nav";
 import { useLocale } from "@/lib/locale";
 
 const initialInputs = {
@@ -73,12 +74,16 @@ export default function PricingPage() {
   }
 
   return (
-    <main className="min-h-full flex-1 bg-[#f4f1ea] text-[#1d2a24]">
-      <header className="flex items-center justify-between border-b border-[#d8d4ca] bg-[#fffdf8] px-6 py-5 sm:px-10">
-        <div><p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c75c3b]">Vinoux / Biznizer</p><h1 className="mt-1 text-xl font-semibold">{language === "id" ? "Kalkulator harga parfum" : "Perfume pricing"}</h1></div>
-        <LocaleControls />
-        <div className="flex items-center gap-5 text-sm"><Link className="text-[#69736b] hover:text-[#c75c3b]" href="/pos">Back to POS</Link><Link className="hidden text-[#69736b] hover:text-[#c75c3b] sm:inline" href="/sales">Sales</Link></div>
-      </header>
+    <main className="min-h-full flex-1 bg-[#f5f1ea] text-[#1e2a23]">
+      <AppNav
+        title={language === "id" ? "Kalkulator harga parfum" : "Perfume pricing"}
+        right={
+          <>
+            <Link className="nav-link" href="/pos">Back to POS</Link>
+            <Link className="nav-link hidden sm:inline-flex" href="/sales">Sales</Link>
+          </>
+        }
+      />
 
       <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_380px]">
         <section>

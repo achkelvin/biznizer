@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { AppNav } from "@/components/top-nav";
 import { refreshCatalog } from "@/lib/catalog/repository";
 import { adjustInventory, getInventoryMovements, type InventoryMovement } from "@/lib/inventory/repository";
 import { getCurrentUserRole, type StoreRole } from "@/lib/supabase/auth";
@@ -59,15 +60,20 @@ export default function InventoryPage() {
   }
 
   if (role !== "owner" && role !== "manager") {
-    return <main className="min-h-full flex-1 bg-[#f4f1ea] text-[#1d2a24]"><header className="flex items-center justify-between border-b border-[#d8d4ca] bg-[#fffdf8] px-6 py-5 sm:px-10"><div><p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c75c3b]">Biznizer</p><h1 className="mt-1 text-xl font-semibold">Inventory</h1></div><div className="flex gap-5 text-sm"><Link className="text-[#69736b] hover:text-[#c75c3b]" href="/pos">Back to POS</Link><button className="text-[#69736b] hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button></div></header><div className="mx-auto max-w-2xl p-6 sm:p-10"><p className="border border-[#e6c8b9] bg-[#fff4ef] px-4 py-3 text-sm text-[#a14f35]">This inventory workspace is restricted to managers and owners.</p></div></main>;
+    return <main className="min-h-full flex-1 bg-[#f5f1ea] text-[#1e2a23]"><AppNav title="Inventory" right={<><Link className="nav-link" href="/pos">Back to POS</Link><button className="nav-link" onClick={() => void signOut()} type="button">Sign out</button></>} /><div className="mx-auto max-w-2xl p-6 sm:p-10"><p className="rounded-2xl border border-[#f0d4ca] bg-[#fff3ee] px-4 py-3 text-sm text-[#a14f35]">This inventory workspace is restricted to managers and owners.</p></div></main>;
   }
 
   return (
-    <main className="min-h-full flex-1 bg-[#f4f1ea] text-[#1d2a24]">
-      <header className="flex items-center justify-between border-b border-[#d8d4ca] bg-[#fffdf8] px-6 py-5 sm:px-10">
-        <div><p className="text-xs font-bold uppercase tracking-[0.22em] text-[#c75c3b]">Biznizer</p><h1 className="mt-1 text-xl font-semibold">Inventory management</h1></div>
-        <div className="flex items-center gap-5 text-sm"><Link className="text-[#69736b] hover:text-[#c75c3b]" href="/pos">Back to POS</Link><button className="text-[#69736b] hover:text-[#c75c3b]" onClick={() => void signOut()} type="button">Sign out</button></div>
-      </header>
+    <main className="min-h-full flex-1 bg-[#f5f1ea] text-[#1e2a23]">
+      <AppNav
+        title="Inventory management"
+        right={
+          <>
+            <Link className="nav-link" href="/pos">Back to POS</Link>
+            <button className="nav-link" onClick={() => void signOut()} type="button">Sign out</button>
+          </>
+        }
+      />
       <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_360px]">
         <section>
           <div className="mb-6 flex items-end justify-between"><div><p className="text-sm text-[#69736b]">Current stock</p><h2 className="mt-1 text-3xl font-semibold tracking-tight">Inventory overview</h2></div><span className="text-sm text-[#69736b]">{status}</span></div>
