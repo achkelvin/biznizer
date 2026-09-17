@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Perfume Production Planner</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --card: #ffffff;
+    --ink: #2b2420;
+    --muted: #7a6f63;
+    --accent: #a8763e;
+    --accent-light: #f3e6d3;
+    --border: #e8ddd0;
+    --good: #4a7c59;
+    --warn: #b5541f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 24px 16px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 700px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .card h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin: 0 0 16px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 14px;
+    margin-bottom: 4px;
+  }
+  label:first-of-type { margin-top: 0; }
+  .hint { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  input[type="number"], select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fdfcfa;
+    color: var(--ink);
+  }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .full { grid-column: 1 / -1; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; }
+  td.num, th.num { text-align: right; }
+  .total-row td { font-weight: 700; border-top: 2px solid var(--accent); border-bottom: none; padding-top: 10px; }
+  .highlight {
+    background: var(--accent-light);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .highlight .label { font-size: 13px; color: var(--muted); }
+  .highlight .value { font-size: 24px; font-weight: 700; color: var(--accent); }
+  .currency-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
+  .currency-toggle button {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: var(--card); color: var(--muted); font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  .currency-toggle button.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .note-split { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 6px; }
+  .note-split div { text-align: center; }
+  .note-split label { margin-top: 0; font-size: 11px; text-transform: uppercase; color: var(--muted); }
+  .section-title { grid-column: 1/-1; font-size: 15px; font-weight: 700; margin: 8px 0 -4px; }
+  .badge { display: inline-block; font-size: 11px; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 10px; margin-left: 6px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🧪 Perfume Production Planner</h1>
+  <p class="subtitle">Plan raw materials, packaging, and total cost for your production run. Adjust scent count, batch size, and concentration to see everything recalculate.</p>
+
+  <div class="currency-toggle">
+    <button id="btn-idr" class="active" onclick="setCurrency('IDR')">Rp (IDR)</button>
+    <button id="btn-usd" onclick="setCurrency('USD')">$ (USD)</button>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Batch Setup</h2>
+      <label>Number of scents in this run</label>
+      <input type="number" id="numScents" value="1" min="1" max="10">
+
+      <label>30ml full-size bottles per scent</label>
+      <input type="number" id="qty30" value="30" min="0">
+
+      <label>10ml sample bottles per scent</label>
+      <input type="number" id="qty10" value="20" min="0">
+
+      <label>Fragrance concentration (%)
+        <div class="hint">Eau de Toilette ~10%, Eau de Parfum ~15-20%, Extrait 20%+</div>
+      </label>
+      <input type="number" id="concentration" value="18" min="1" max="40">
+
+      <label>Buffer for spillage/testing (%)</label>
+      <input type="number" id="buffer" value="10" min="0" max="50">
+    </div>
+
+    <div class="card">
+      <h2>Note Pyramid Split (% of oil)</h2>
+      <div class="hint">Must add up to 100% — adjusts oil breakdown per note</div>
+      <div class="note-split">
+        <div>
+          <label>Top</label>
+          <input type="number" id="topPct" value="20" min="0" max="100">
+        </div>
+        <div>
+          <label>Heart</label>
+          <input type="number" id="heartPct" value="50" min="0" max="100">
+        </div>
+        <div>
+          <label>Base</label>
+          <input type="number" id="basePct" value="30" min="0" max="100">
+        </div>
+      </div>
+      <div class="hint" id="splitWarning" style="margin-top:8px; color: var(--warn); font-weight:600;"></div>
+
+      <label style="margin-top:20px;">Avg. oil cost per ml</label>
+      <input type="number" id="oilCostPerMl" value="1400">
+
+      <label>Alcohol cost per liter</label>
+      <input type="number" id="alcoholCostPerL" value="150000">
+    </div>
+
+    <div class="card">
+      <h2>Packaging Costs (per unit)</h2>
+      <div class="row2">
+        <div>
+          <label>30ml bottle + sprayer</label>
+          <input type="number" id="bottle30Cost" value="10000">
+        </div>
+        <div>
+          <label>10ml sample vial</label>
+          <input type="number" id="bottle10Cost" value="4000">
+        </div>
+      </div>
+      <label>Label set (per bottle)</label>
+      <input type="number" id="labelCost" value="1500">
+
+      <label>Outer box (30ml only, optional)</label>
+      <input type="number" id="boxCost" value="5000">
+
+      <label>Packaging buffer for breakage/mistakes (%)</label>
+      <input type="number" id="packagingBuffer" value="15" min="0" max="50">
+    </div>
+
+    <div class="card">
+      <h2>One-Time Tools</h2>
+      <div class="hint">Reusable across future batches — only pay once</div>
+      <label style="margin-top:12px;">Include tools in this calculation?</label>
+      <select id="includeTools">
+        <option value="yes">Yes, first production run</option>
+        <option value="no">No, I already have tools</option>
+      </select>
+      <label>Total tools cost
+        <div class="hint">Beakers, pipettes, funnels, filter paper, maceration bottle, gloves, testing strips</div>
+      </label>
+      <input type="number" id="toolsCost" value="215000">
+    </div>
+  </div>
+
+  <div class="card full" style="margin-top:16px;">
+    <h2>Material Requirements</h2>
+    <table>
+      <thead>
+        <tr><th>Item</th><th class="num">Quantity Needed</th></tr>
+      </thead>
+      <tbody id="materialsTable"></tbody>
+    </table>
+  </div>
+
+  <div class="card full" style="margin-top:16px;">
+    <h2>Cost Breakdown</h2>
+    <table>
+      <thead>
+        <tr><th>Category</th><th class="num">Cost</th></tr>
+      </thead>
+      <tbody id="costTable"></tbody>
+      <tfoot>
+        <tr class="total-row"><td>Total Production Cost</td><td class="num" id="grandTotal">-</td></tr>
+      </tfoot>
+    </table>
+    <div class="highlight">
+      <span class="label">Total units produced <span class="badge" id="unitBadge"></span></span>
+      <span class="value" id="totalUnits">-</span>
+    </div>
+    <div class="highlight">
+      <span class="label">Average cost per unit (blended 30ml + 10ml)</span>
+      <span class="value" id="avgCostPerUnit">-</span>
+    </div>
+  </div>
+</div>
+
+<script>
+let currency = 'IDR';
+const fmt = (n) => {
+  if (isNaN(n) || !isFinite(n)) return '-';
+  if (currency === 'IDR') return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+  return '$' + (n / 15000).toFixed(2); // rough IDR->USD for display purposes
+};
+const fmtVol = (n) => {
+  if (n >= 1000) return (n/1000).toFixed(2) + ' L';
+  return Math.round(n) + ' ml';
+};
+
+function setCurrency(c) {
+  currency = c;
+  document.getElementById('btn-idr').classList.toggle('active', c === 'IDR');
+  document.getElementById('btn-usd').classList.toggle('active', c === 'USD');
+  calculate();
+}
+
+function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function calculate() {
+  const numScents = val('numScents');
+  const qty30 = val('qty30');
+  const qty10 = val('qty10');
+  const concentration = val('concentration') / 100;
+  const buffer = 1 + (val('buffer') / 100);
+  const topPct = val('topPct'), heartPct = val('heartPct'), basePct = val('basePct');
+  const splitTotal = topPct + heartPct + basePct;
+
+  const warnEl = document.getElementById('splitWarning');
+  warnEl.textContent = splitTotal !== 100 ? `⚠ Currently totals ${splitTotal}% — adjust to 100%` : '';
+
+  const oilCostPerMl = val('oilCostPerMl');
+  const alcoholCostPerL = val('alcoholCostPerL');
+  const bottle30Cost = val('bottle30Cost');
+  const bottle10Cost = val('bottle10Cost');
+  const labelCost = val('labelCost');
+  const boxCost = val('boxCost');
+  const packagingBuffer = 1 + (val('packagingBuffer') / 100);
+  const includeTools = document.getElementById('includeTools').value === 'yes';
+  const toolsCost = val('toolsCost');
+
+  // Volume calculations (per scent, then x numScents)
+  const liquidPerScent = (qty30 * 30) + (qty10 * 10);
+  const totalLiquidRaw = liquidPerScent * numScents;
+  const totalLiquidBuffered = totalLiquidRaw * buffer;
+
+  const totalOil = totalLiquidBuffered * concentration;
+  const totalAlcohol = totalLiquidBuffered - totalOil;
+
+  const oilTop = totalOil * (topPct / 100);
+  const oilHeart = totalOil * (heartPct / 100);
+  const oilBase = totalOil * (basePct / 100);
+
+  // Packaging quantities (with buffer, per scent x numScents)
+  const bottles30Needed = Math.ceil(qty30 * numScents * packagingBuffer);
+  const bottles10Needed = Math.ceil(qty10 * numScents * packagingBuffer);
+  const labelsNeeded = bottles30Needed + bottles10Needed;
+  const boxesNeeded = bottles30Needed;
+
+  // Costs
+  const oilCostTotal = totalOil * oilCostPerMl;
+  const alcoholCostTotal = (totalAlcohol / 1000) * alcoholCostPerL;
+  const bottle30CostTotal = bottles30Needed * bottle30Cost;
+  const bottle10CostTotal = bottles10Needed * bottle10Cost;
+  const labelCostTotal = labelsNeeded * labelCost;
+  const boxCostTotal = boxesNeeded * boxCost;
+  const toolsCostTotal = includeTools ? toolsCost : 0;
+
+  const grandTotal = oilCostTotal + alcoholCostTotal + bottle30CostTotal + bottle10CostTotal + labelCostTotal + boxCostTotal + toolsCostTotal;
+
+  const totalUnits = (qty30 + qty10) * numScents;
+
+  // Render materials table
+  document.getElementById('materialsTable').innerHTML = `
+    <tr><td>Total liquid to produce (incl. buffer)</td><td class="num">${fmtVol(totalLiquidBuffered)}</td></tr>
+    <tr><td>— Fragrance oil (concentrate)</td><td class="num">${fmtVol(totalOil)}</td></tr>
+    <tr style="padding-left:12px;"><td style="padding-left:16px; color:#7a6f63;">Top notes (${topPct}%)</td><td class="num">${fmtVol(oilTop)}</td></tr>
+    <tr><td style="padding-left:16px; color:#7a6f63;">Heart notes (${heartPct}%)</td><td class="num">${fmtVol(oilHeart)}</td></tr>
+    <tr><td style="padding-left:16px; color:#7a6f63;">Base notes (${basePct}%)</td><td class="num">${fmtVol(oilBase)}</td></tr>
+    <tr><td>— Perfumer's alcohol</td><td class="num">${fmtVol(totalAlcohol)}</td></tr>
+    <tr><td>30ml bottles to order</td><td class="num">${bottles30Needed} units</td></tr>
+    <tr><td>10ml sample vials to order</td><td class="num">${bottles10Needed} units</td></tr>
+    <tr><td>Labels to order</td><td class="num">${labelsNeeded} sets</td></tr>
+    <tr><td>Outer boxes to order</td><td class="num">${boxesNeeded} units</td></tr>
+  `;
+
+  document.getElementById('costTable').innerHTML = `
+    <tr><td>Fragrance oil</td><td class="num">${fmt(oilCostTotal)}</td></tr>
+    <tr><td>Perfumer's alcohol</td><td class="num">${fmt(alcoholCostTotal)}</td></tr>
+    <tr><td>30ml bottles + sprayers</td><td class="num">${fmt(bottle30CostTotal)}</td></tr>
+    <tr><td>10ml sample vials</td><td class="num">${fmt(bottle10CostTotal)}</td></tr>
+    <tr><td>Labels</td><td class="num">${fmt(labelCostTotal)}</td></tr>
+    <tr><td>Outer boxes</td><td class="num">${fmt(boxCostTotal)}</td></tr>
+    <tr><td>One-time tools ${includeTools ? '' : '(skipped)'}</td><td class="num">${fmt(toolsCostTotal)}</td></tr>
+  `;
+
+  document.getElementById('grandTotal').textContent = fmt(grandTotal);
+  document.getElementById('totalUnits').textContent = totalUnits + ' bottles';
+  document.getElementById('unitBadge').textContent = numScents + (numScents > 1 ? ' scents' : ' scent');
+  document.getElementById('avgCostPerUnit').textContent = totalUnits > 0 ? fmt(grandTotal / totalUnits) : '-';
+}
+
+document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calculate));
+calculate();
+</script>
+</body>
+</html>
