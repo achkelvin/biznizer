@@ -11,6 +11,7 @@ const quickActions = [
   { title: "Catalog", description: "Manage products and pricing visibility.", href: "/catalog", accent: "bg-[#f5e3d8] text-[#1e2a23]" },
   { title: "Inventory", description: "Review stock levels and adjustments.", href: "/inventory", accent: "bg-[#eaf4ef] text-[#1e2a23]" },
   { title: "Sales report", description: "Review completed orders and revenue trends.", href: "/sales", accent: "bg-[#f3e3d7] text-[#1e2a23]" },
+  { title: "Analytics", description: "Compare revenue, payment mix, and top receipts.", href: "/analytics", accent: "bg-[#e8eee8] text-[#1e2a23]" },
   { title: "Production", description: "Plan batches and track production costs.", href: "/production", accent: "bg-[#f2ecdf] text-[#1e2a23]" },
   { title: "Team roles", description: "Assign manager and ownership access.", href: "/team", accent: "bg-[#efe6dc] text-[#1e2a23]" },
 ];

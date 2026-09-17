@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -50,7 +51,8 @@ export default function SalesPage() {
         title="Sales history"
         right={
           <>
-            <a className="nav-link" href="/pos">Back to POS</a>
+            <Link className="nav-link" href="/analytics">Analytics</Link>
+            <Link className="nav-link" href="/pos">Back to POS</Link>
             <button className="nav-link" onClick={() => void signOut()} type="button">Sign out</button>
           </>
         }

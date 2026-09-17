@@ -95,3 +95,25 @@ Before submitting changes, run:
 npm run lint
 npm run build
 ```
+
+### Deploy for cross-device testing
+
+The simplest deployment path for this Next.js app is Vercel. It supports the App Router without additional server configuration.
+
+1. Push the repository to GitHub, GitLab, or Bitbucket.
+2. Open [vercel.com/new](https://vercel.com/new), sign in, and import the repository.
+3. Keep the detected framework as **Next.js** and keep the default build command, `npm run build`.
+4. Add these environment variables in the project settings for the **Production**, **Preview**, and **Development** environments:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+NEXT_PUBLIC_SUPABASE_STORE_ID=your-store-uuid
+```
+
+5. Deploy, open the generated HTTPS URL on your phone or another computer, and sign in through `/login`.
+6. In Supabase **Authentication -> URL Configuration**, add the deployed URL to **Site URL** and add it to **Redirect URLs** if email confirmation or password recovery is enabled.
+
+Only the publishable Supabase key belongs in these `NEXT_PUBLIC_*` settings. Never add a Supabase service-role key to the browser app or commit `.env.local`.
+
+For an Azure-hosted deployment, install and authenticate the Azure CLI and Azure Developer CLI first. The current workspace does not include Azure deployment instructions or an Azure resource definition, so Vercel is the ready-to-use path for testing today.
