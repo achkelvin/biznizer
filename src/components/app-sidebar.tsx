@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { LocaleControls } from "@/components/locale-controls";
+import { isAuthDisabled } from "@/lib/env";
 import { useLocale } from "@/lib/locale";
 import { getCurrentUserRole, type StoreRole } from "@/lib/supabase/auth";
 import { createClient } from "@/lib/supabase/client";
@@ -72,7 +73,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { language } = useLocale();
-  const [role, setRole] = useState<StoreRole | null>(null);
+  const demoMode = isAuthDisabled();
+  const [role, setRole] = useState<StoreRole | null>(demoMode ? "owner" : null);
   const [signedIn, setSignedIn] = useState(false);
   // The drawer remembers which page it was opened on, so navigating closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
@@ -80,6 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const t = (label: [string, string]) => (language === "id" ? label[1] : label[0]);
 
   useEffect(() => {
+    if (demoMode) return; // No login in demo mode: the role is fixed to owner above.
     let active = true;
     const load = async () => {
       try {
@@ -102,7 +105,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       // Same as above.
     }
     return () => { active = false; unsubscribe(); };
-  }, []);
+  }, [demoMode]);
 
   if (HIDDEN_ON.some((path) => pathname.startsWith(path))) return <>{children}</>;
 
@@ -158,7 +161,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="mt-4 space-y-3 border-t border-[#1e2a23]/10 pt-4">
           <LocaleControls />
-          {signedIn ? (
+          {demoMode ? (
+            <p className="rounded-xl bg-[#f5e3d8]/80 px-3 py-2 text-xs leading-5 text-[#a14f35]">{language === "id" ? "Mode demo: tanpa login, data hanya di browser ini." : "Demo mode: no login, data stays in this browser."}</p>
+          ) : signedIn ? (
             <button className="sidebar-link w-full" onClick={() => void signOut()} type="button">
               <Icon><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10" /></Icon>
               {language === "id" ? "Keluar" : "Sign out"}

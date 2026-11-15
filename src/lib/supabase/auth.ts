@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
-import { getStoreId } from "@/lib/env";
+import { DEMO_ROLE, demoGetTeamMembers, demoSetTeamMemberRole } from "@/lib/demo/store";
+import { getStoreId, isAuthDisabled } from "@/lib/env";
 
 export type StoreRole = "owner" | "manager" | "staff";
 
@@ -9,6 +10,7 @@ export type TeamMember = {
 };
 
 export async function getCurrentUserRole(): Promise<StoreRole | null> {
+  if (isAuthDisabled()) return DEMO_ROLE;
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -40,6 +42,7 @@ function isStoreRole(value: unknown): value is StoreRole {
 }
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
+  if (isAuthDisabled()) return demoGetTeamMembers();
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const storeId = getStoreId();
@@ -54,6 +57,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
 }
 
 export async function setTeamMemberRole(userId: string, role: StoreRole) {
+  if (isAuthDisabled()) return demoSetTeamMemberRole(userId, role);
   const supabase = createClient();
   const storeId = getStoreId();
   if (!storeId) throw new Error("Configure a store before managing team roles.");

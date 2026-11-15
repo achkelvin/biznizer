@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getPublicEnv } from "@/lib/env";
-import { getStoreId } from "@/lib/env";
+import { getStoreId, isAuthDisabled } from "@/lib/env";
 
 type StoreRole = "owner" | "manager" | "staff";
 
@@ -27,6 +27,11 @@ function isStaleSessionError(error: unknown) {
 }
 
 export async function updateSession(request: NextRequest) {
+  // Login switched off for local testing: let every page through and skip the login screen.
+  if (isAuthDisabled()) {
+    return request.nextUrl.pathname === "/login" ? NextResponse.redirect(new URL("/", request.url)) : NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
   const env = getPublicEnv();
   const supabase = createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {

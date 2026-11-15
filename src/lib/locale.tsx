@@ -21,24 +21,29 @@ const fallbackRate = 16500;
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>(() => {
-    if (typeof window === "undefined") return "en";
-    const saved = window.localStorage.getItem("biznizer-language");
-    return saved === "id" ? "id" : "en";
-  });
-  const [currency, setCurrency] = useState<Currency>(() => {
-    if (typeof window === "undefined") return "USD";
-    return window.localStorage.getItem("biznizer-currency") === "IDR" ? "IDR" : "USD";
-  });
-  const [rate, setRate] = useState(() => {
-    if (typeof window === "undefined") return fallbackRate;
-    const saved = Number(window.localStorage.getItem("biznizer-usd-idr-rate"));
-    return saved > 0 ? saved : fallbackRate;
-  });
-  const [rateStatus, setRateStatus] = useState<LocaleContextValue["rateStatus"]>(() => {
-    if (typeof window === "undefined") return "loading";
-    return Number(window.localStorage.getItem("biznizer-usd-idr-rate")) > 0 ? "cached" : "loading";
-  });
+  // Start from fixed defaults so the server HTML and the first browser render match, then
+  // load this browser's saved choices right after mount. Reading localStorage during the
+  // first render instead makes React report a hydration mismatch on every page.
+  const [language, setLanguage] = useState<Language>("en");
+  const [currency, setCurrency] = useState<Currency>("USD");
+  const [rate, setRate] = useState(fallbackRate);
+  const [rateStatus, setRateStatus] = useState<LocaleContextValue["rateStatus"]>("loading");
+  const [restored, setRestored] = useState(false);
+
+  useEffect(() => {
+    const task = window.setTimeout(() => {
+      if (window.localStorage.getItem("biznizer-language") === "id") setLanguage("id");
+      if (window.localStorage.getItem("biznizer-currency") === "IDR") setCurrency("IDR");
+      const savedRate = Number(window.localStorage.getItem("biznizer-usd-idr-rate"));
+      if (savedRate > 0) {
+        // Keep a live rate if the request below already answered.
+        setRate((current) => (current === fallbackRate ? savedRate : current));
+        setRateStatus((current) => (current === "loading" ? "cached" : current));
+      }
+      setRestored(true);
+    }, 0);
+    return () => window.clearTimeout(task);
+  }, []);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -58,14 +63,17 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     void loadRate();
   }, []);
 
+  // Save choices only after the saved ones are loaded, or the defaults would overwrite them.
   useEffect(() => {
+    if (!restored) return;
     window.localStorage.setItem("biznizer-language", language);
     document.documentElement.lang = language === "id" ? "id" : "en";
-  }, [language]);
+  }, [language, restored]);
 
   useEffect(() => {
+    if (!restored) return;
     window.localStorage.setItem("biznizer-currency", currency);
-  }, [currency]);
+  }, [currency, restored]);
 
   const value = useMemo<LocaleContextValue>(() => ({
     language,

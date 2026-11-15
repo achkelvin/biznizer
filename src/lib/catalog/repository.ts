@@ -1,6 +1,7 @@
 import { demoProducts } from "@/lib/catalog/demo-products";
 import type { CatalogProduct } from "@/lib/catalog/types";
-import { getStoreId } from "@/lib/env";
+import { demoCreateProduct, demoGetCatalog, demoGetCategories } from "@/lib/demo/store";
+import { getStoreId, isAuthDisabled } from "@/lib/env";
 import { offlineDatabase } from "@/lib/offline/database";
 import { createClient } from "@/lib/supabase/client";
 
@@ -33,11 +34,13 @@ export type NewCatalogProduct = {
 };
 
 export async function getCachedCatalog() {
+  if (isAuthDisabled()) return demoGetCatalog();
   const cachedProducts = await offlineDatabase.catalogProducts.toArray();
   return cachedProducts.length > 0 ? cachedProducts : demoProducts;
 }
 
 export async function refreshCatalog(): Promise<CatalogProduct[]> {
+  if (isAuthDisabled()) return demoGetCatalog();
   const storeId = getStoreId();
   if (!storeId) return getCachedCatalog();
 
@@ -69,6 +72,7 @@ export async function refreshCatalog(): Promise<CatalogProduct[]> {
 }
 
 export async function getCatalogCategories() {
+  if (isAuthDisabled()) return demoGetCategories();
   const storeId = getStoreId();
   if (!storeId) return [];
 
@@ -79,6 +83,7 @@ export async function getCatalogCategories() {
 }
 
 export async function createCatalogProduct(product: NewCatalogProduct) {
+  if (isAuthDisabled()) return demoCreateProduct(product);
   const storeId = getStoreId();
   if (!storeId) throw new Error("Configure a Supabase store before adding products.");
 

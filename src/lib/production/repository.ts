@@ -1,4 +1,5 @@
-import { getStoreId } from "@/lib/env";
+import { demoCreateProductionBatch, demoGetProductionBatches } from "@/lib/demo/store";
+import { getStoreId, isAuthDisabled } from "@/lib/env";
 import type { ProductionInputs, ProductionResults } from "@/lib/production/calculator";
 import { createClient } from "@/lib/supabase/client";
 
@@ -12,6 +13,7 @@ export type ProductionBatch = {
 };
 
 export async function getProductionBatches(): Promise<ProductionBatch[]> {
+  if (isAuthDisabled()) return demoGetProductionBatches();
   const storeId = getStoreId();
   if (!storeId) return [];
   const { data, error } = await createClient().from("production_batches").select("id, name, status, total_units, total_cost, created_at").eq("store_id", storeId).order("created_at", { ascending: false }).limit(50);
@@ -20,6 +22,7 @@ export async function getProductionBatches(): Promise<ProductionBatch[]> {
 }
 
 export async function createProductionBatch(inputs: ProductionInputs, results: ProductionResults) {
+  if (isAuthDisabled()) return demoCreateProductionBatch(inputs, results);
   const storeId = getStoreId();
   if (!storeId) throw new Error("Configure a valid store before saving production batches.");
   const { data: { user } } = await createClient().auth.getUser();

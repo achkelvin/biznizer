@@ -116,6 +116,8 @@ export default function PointOfSale() {
       if (!isOnline) throw new Error("offline");
       await recordSale(payload);
       setSaleStatus("Sale recorded");
+      // Show the new stock levels straight away; if this fails the sale is still recorded.
+      void refreshCatalog().then(setProducts).catch(() => undefined);
     } catch {
       await offlineDatabase.pendingSales.put({
         id: payload.saleId,

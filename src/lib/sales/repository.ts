@@ -1,5 +1,6 @@
 import type { CatalogProduct } from "@/lib/catalog/types";
-import { getStoreId } from "@/lib/env";
+import { demoRecordSale } from "@/lib/demo/store";
+import { getStoreId, isAuthDisabled } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 
 export type SaleLine = {
@@ -37,6 +38,7 @@ export function toSalePayload(saleId: string, products: CatalogProduct[], paymen
 }
 
 export async function recordSale(payload: SalePayload) {
+  if (isAuthDisabled()) return demoRecordSale(payload);
   const storeId = getStoreId();
   if (!storeId) throw new Error("Configure a valid store before recording sales.");
 

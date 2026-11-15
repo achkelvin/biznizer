@@ -1,4 +1,5 @@
-import { getStoreId } from "@/lib/env";
+import { demoGetRecentSales, demoGetSaleDetail } from "@/lib/demo/store";
+import { getStoreId, isAuthDisabled } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 
 export type SaleRecord = {
@@ -25,6 +26,7 @@ type SaleRow = {
 };
 
 export async function getRecentSales(): Promise<SaleRecord[]> {
+  if (isAuthDisabled()) return demoGetRecentSales();
   const storeId = getStoreId();
   if (!storeId) return [];
 
@@ -46,6 +48,7 @@ export async function getRecentSales(): Promise<SaleRecord[]> {
 }
 
 export async function getSaleDetail(saleId: string): Promise<SaleDetail | null> {
+  if (isAuthDisabled()) return demoGetSaleDetail(saleId);
   const storeId = getStoreId();
   if (!storeId) return null;
 

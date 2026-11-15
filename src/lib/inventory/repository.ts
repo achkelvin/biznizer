@@ -1,4 +1,5 @@
-import { getStoreId } from "@/lib/env";
+import { demoAdjustInventory, demoGetInventoryMovements } from "@/lib/demo/store";
+import { getStoreId, isAuthDisabled } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 
 export type InventoryMovement = {
@@ -12,6 +13,7 @@ export type InventoryMovement = {
 };
 
 export async function getInventoryMovements(): Promise<InventoryMovement[]> {
+  if (isAuthDisabled()) return demoGetInventoryMovements();
   const storeId = getStoreId();
   if (!storeId) return [];
 
@@ -46,6 +48,7 @@ export async function getInventoryMovements(): Promise<InventoryMovement[]> {
 }
 
 export async function adjustInventory(productId: string, quantityDelta: number, reason: string, reference?: string) {
+  if (isAuthDisabled()) return demoAdjustInventory(productId, quantityDelta, reason, reference);
   const storeId = getStoreId();
   if (!storeId) throw new Error("Configure a valid store before adjusting inventory.");
 

@@ -19,3 +19,12 @@ export function getStoreId() {
   if (!storeId) return undefined;
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(storeId) ? storeId : undefined;
 }
+
+/**
+ * True when NEXT_PUBLIC_AUTH_DISABLED=true. Login is skipped, everyone is treated as an
+ * owner, and data comes from the browser-only demo store (src/lib/demo/store.ts) instead
+ * of Supabase. For local testing only: leave it unset in production.
+ */
+export function isAuthDisabled() {
+  return process.env.NEXT_PUBLIC_AUTH_DISABLED === "true";
+}
