@@ -1,28 +1,21 @@
 import type { ReactNode } from "react";
 
-import { LocaleControls } from "@/components/locale-controls";
-
 type AppNavProps = {
   title: string;
   subtitle?: string;
+  /** Page-specific actions or status. Navigation and sign out live in the sidebar. */
   right?: ReactNode;
-  showLocale?: boolean;
 };
 
-export function AppNav({ title, subtitle, right, showLocale = true }: AppNavProps) {
+export function AppNav({ title, subtitle, right }: AppNavProps) {
   return (
-    <header className="border-b border-[#e6ddd0] bg-[#fffdf9] px-6 py-5 shadow-[0_6px_18px_rgba(30,42,35,0.02)] sm:px-10">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#c75c3b]">Biznizer</p>
-          <h1 className="mt-1 text-xl font-semibold text-[#1e2a23]">{title}</h1>
-          {subtitle ? <p className="mt-1 text-sm text-[#5d665f]">{subtitle}</p> : null}
+    <header className="glass-bar sticky top-14 z-20 px-5 py-4 sm:px-8 lg:top-0 lg:px-10">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-semibold tracking-tight text-[#1e2a23]">{title}</h1>
+          {subtitle ? <p className="mt-0.5 truncate text-sm text-[#5d665f]">{subtitle}</p> : null}
         </div>
-
-        <div className="flex items-center gap-2 text-sm sm:gap-3">
-          {showLocale ? <LocaleControls /> : null}
-          {right}
-        </div>
+        {right ? <div className="flex flex-wrap items-center gap-2 text-sm">{right}</div> : null}
       </div>
     </header>
   );

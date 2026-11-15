@@ -40,7 +40,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-full flex-1 items-center justify-center bg-[#f5f1ea] px-6 py-12 text-[#1e2a23]">
+    <main className="flex min-h-full flex-1 items-center justify-center px-6 py-12 text-[#1e2a23]">
       <section className="surface w-full max-w-md p-7 sm:p-9">
         <div className="mb-7">
           <p className="text-xs font-bold uppercase tracking-[0.26em] text-[#c75c3b]">Biznizer</p>

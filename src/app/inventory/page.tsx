@@ -1,19 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import { AppNav } from "@/components/top-nav";
 import { refreshCatalog } from "@/lib/catalog/repository";
 import { adjustInventory, getInventoryMovements, type InventoryMovement } from "@/lib/inventory/repository";
 import { getCurrentUserRole, type StoreRole } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/client";
 
 const emptyForm = { productId: "", quantityDelta: "", reason: "manual_adjustment", reference: "" };
 
 export default function InventoryPage() {
-  const router = useRouter();
   const [role, setRole] = useState<StoreRole | null>(null);
   const [products, setProducts] = useState<Array<{ id: string; name: string; stock: number }>>([]);
   const [movements, setMovements] = useState<InventoryMovement[]>([]);
@@ -54,28 +50,16 @@ export default function InventoryPage() {
     }
   }
 
-  async function signOut() {
-    await createClient().auth.signOut();
-    router.replace("/login");
-  }
 
   if (role !== "owner" && role !== "manager") {
-    return <main className="min-h-full flex-1 bg-[#f5f1ea] text-[#1e2a23]"><AppNav title="Inventory" right={<><Link className="nav-link" href="/pos">Back to POS</Link><button className="nav-link" onClick={() => void signOut()} type="button">Sign out</button></>} /><div className="mx-auto max-w-2xl p-6 sm:p-10"><p className="rounded-2xl border border-[#f0d4ca] bg-[#fff3ee] px-4 py-3 text-sm text-[#a14f35]">This inventory workspace is restricted to managers and owners.</p></div></main>;
+    return <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]"><AppNav title="Inventory" /><div className="mx-auto max-w-2xl p-6 sm:p-10"><p className="rounded-2xl border border-[#f0d4ca] bg-[#fff3ee] px-4 py-3 text-sm text-[#a14f35]">This inventory workspace is restricted to managers and owners.</p></div></main>;
   }
 
   return (
-    <main className="min-h-full flex-1 bg-[#f5f1ea] text-[#1e2a23]">
-      <AppNav
-        title="Inventory management"
-        right={
-          <>
-            <Link className="nav-link" href="/pos">Back to POS</Link>
-            <button className="nav-link" onClick={() => void signOut()} type="button">Sign out</button>
-          </>
-        }
-      />
+    <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]">
+      <AppNav title="Inventory" subtitle="Stock levels and adjustments" />
 
-      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1.2fr_360px]">
+      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="surface p-5 sm:p-6">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
@@ -85,12 +69,12 @@ export default function InventoryPage() {
             <span className="rounded-full bg-[#f5e3d8] px-2.5 py-1 text-xs font-medium text-[#a14f35]">{status}</span>
           </div>
 
-          <div className="mb-5 rounded-2xl border border-[#eadfd2] bg-[#f8f2eb] p-4 text-sm text-[#5d665f]">
+          <div className="mb-5 inset-panel p-4 text-sm text-[#5d665f]">
             Low stock alert: <span className="font-semibold text-[#a14f35]">{lowStock.length} product(s)</span> at 5 or below.
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-[#e6ddd0] bg-[#fffdf9]">
-            <div className="grid grid-cols-[1fr_100px_120px] border-b border-[#e6ddd0] bg-[#faf5f0] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#5d665f]">
+          <div className="overflow-hidden inset-panel">
+            <div className="grid grid-cols-[1fr_100px_120px] border-b border-[#1e2a23]/10 bg-white/40 px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#5d665f]">
               <span>Product</span>
               <span>Stock</span>
               <span className="text-right">Status</span>
@@ -100,7 +84,7 @@ export default function InventoryPage() {
               <p className="p-8 text-sm text-[#5d665f]">No products in inventory yet.</p>
             ) : (
               products.map((product) => (
-                <div className="grid grid-cols-[1fr_100px_120px] items-center border-b border-[#efe8e1] px-5 py-4 last:border-0" key={product.id}>
+                <div className="grid grid-cols-[1fr_100px_120px] items-center border-b border-[#1e2a23]/10 px-5 py-4 last:border-0" key={product.id}>
                   <div>
                     <p className="font-semibold text-[#1e2a23]">{product.name}</p>
                   </div>
@@ -113,14 +97,14 @@ export default function InventoryPage() {
             )}
           </div>
 
-          <div className="mt-8 rounded-2xl border border-[#e6ddd0] bg-[#fffdf9] p-5 sm:p-6">
+          <div className="mt-8 inset-panel p-5 sm:p-6">
             <h3 className="text-xl font-semibold text-[#1e2a23]">Recent inventory movements</h3>
             <div className="mt-4 space-y-3">
               {movements.length === 0 ? (
                 <p className="text-sm text-[#5d665f]">No adjustments recorded yet.</p>
               ) : (
                 movements.map((movement) => (
-                  <div className="flex items-center justify-between gap-4 border-b border-[#efe8e1] pb-3 last:border-0" key={movement.id}>
+                  <div className="flex items-center justify-between gap-4 border-b border-[#1e2a23]/10 pb-3 last:border-0" key={movement.id}>
                     <div>
                       <p className="font-semibold text-[#1e2a23]">{movement.productName}</p>
                       <p className="text-xs text-[#5d665f]">{movement.reason}{movement.reference ? ` · ${movement.reference}` : ""}</p>
@@ -138,7 +122,7 @@ export default function InventoryPage() {
           </div>
         </section>
 
-        <aside className="surface h-fit p-5 sm:p-6 lg:sticky lg:top-6">
+        <aside className="surface h-fit p-5 sm:p-6 xl:sticky xl:top-24">
           <h2 className="text-xl font-semibold text-[#1e2a23]">Adjust stock</h2>
           <p className="mt-2 text-sm leading-6 text-[#5d665f]">Use this for production receipts, returns, damage write-offs, and manual reconciliations.</p>
 

@@ -15,6 +15,7 @@
   body { margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; padding:24px 16px; }
   .wrap { max-width: 1040px; margin:0 auto; }
   h1 { font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:26px; margin:0 0 4px; color:var(--clayDark); }
+  h2.section-title { font-family:'Fraunces',serif; font-style:italic; font-weight:400; font-size:19px; margin:36px 0 4px; color:var(--clayDark); }
   .subtitle { color:var(--muted); font-size:13px; margin:0 0 24px; line-height:1.6; }
   .grid { display:grid; grid-template-columns:1fr; gap:16px; }
   @media (min-width:760px){ .grid.cols2{ grid-template-columns:1fr 1fr; } .grid.cols3{ grid-template-columns:1fr 1fr 1fr; } }
@@ -23,7 +24,7 @@
   label { display:block; font-size:12px; font-weight:600; margin-top:12px; margin-bottom:4px; }
   label:first-of-type{ margin-top:0; }
   .hint { font-size:10px; color:var(--muted); font-weight:400; }
-  input[type=number] { width:100%; padding:9px 10px; border:1px solid var(--hair); border-radius:8px; font-size:13px; background:#fdfcfa; color:var(--ink); }
+  input[type=number], input[type=text] { width:100%; padding:9px 10px; border:1px solid var(--hair); border-radius:8px; font-size:13px; background:#fdfcfa; color:var(--ink); }
   input:focus{ outline:2px solid var(--clay); outline-offset:-1px; }
   .section-row { margin-top: 22px; }
   table { width:100%; border-collapse:collapse; font-size:12px; margin-top:14px; }
@@ -36,12 +37,25 @@
   .giving-badge { display:inline-block; background:#EEF3EC; color:var(--good); font-size:10px; padding:2px 8px; border-radius:10px; margin-left:6px; }
   .curve-badge { display:inline-block; background:#F3EEE1; color:var(--clayDark); font-size:10px; padding:2px 8px; border-radius:10px; margin-left:6px; }
   .table-wrap { overflow-x:auto; }
+
+  .row-item { display:grid; grid-template-columns: 1fr 130px 32px; gap:8px; align-items:center; margin-top:8px; }
+  .row-item.bundle { grid-template-columns: 1fr 110px 110px 32px; }
+  .row-item:first-of-type{ margin-top:0; }
+  .remove-btn { background:none; border:1px solid var(--hair); border-radius:8px; color:var(--warn); cursor:pointer; font-size:14px; height:34px; }
+  .add-btn { margin-top:12px; background:var(--sand); border:1px solid var(--hair); color:var(--clayDark); border-radius:8px; padding:8px 14px; font-size:12px; cursor:pointer; }
+  .col-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px; }
+  .header-row { display:grid; grid-template-columns: 1fr 130px 32px; gap:8px; margin-bottom:2px; }
+  .header-row.bundle { grid-template-columns: 1fr 110px 110px 32px; }
+
+  .summary-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--hair); font-size:13px; }
+  .summary-row:last-child{ border-bottom:none; font-weight:700; font-size:15px; padding-top:12px; }
+  .summary-row.save { color:var(--good); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🧴 Vinoux Pricing Calculator</h1>
-  <p class="subtitle">Reference size: 50ml. Prices follow a volume discount curve — larger sizes cost less per ml, and refills skip the packaging cost entirely — modeled after real niche-fragrance market pricing patterns.</p>
+  <p class="subtitle">Reference size: 50ml. Prices follow a volume discount curve, refills skip packaging cost, and you can add your own custom cost lines below.</p>
 
   <div class="grid cols3">
     <div class="card">
@@ -68,9 +82,20 @@
       <input type="number" id="sealCost" value="500">
       <label>Twine / string cost (Rp)</label>
       <input type="number" id="twineCost" value="300">
-      <div class="hint" style="margin-top:8px;">Refill pricing automatically skips all packaging costs above — only the bottle+cap you already own gets refilled.</div>
     </div>
 
+    <div class="card">
+      <h2>Extra / Custom Costs <span class="curve-badge">manual</span></h2>
+      <div class="hint" style="margin-bottom:10px;">Anything not covered above — QC, a ribbon, printing, whatever comes up. Added per unit, same as packaging.</div>
+      <div class="header-row">
+        <span class="col-label">Label</span><span class="col-label">Amount (Rp)</span><span></span>
+      </div>
+      <div id="extraCostsContainer"></div>
+      <button type="button" class="add-btn" id="addExtraCostBtn">+ Add another cost</button>
+    </div>
+  </div>
+
+  <div class="grid cols3" style="margin-top:16px;">
     <div class="card">
       <h2>Unpredictable Costs</h2>
       <label>Contingency buffer (%)
@@ -85,20 +110,17 @@
         <input type="number" id="unitsPerMonth" value="60">
       </div>
     </div>
-  </div>
-
-  <div class="grid cols3" style="margin-top:16px;">
     <div class="card">
       <h2>Target Margin <span style="font-weight:400;">(at 50ml)</span></h2>
       <label>Margin on top of total cost (%)</label>
       <input type="number" id="marginPct" value="50">
-    </div>
-    <div class="card">
-      <h2>Volume Pricing Curve <span class="curve-badge">market pattern</span></h2>
-      <label>Discount exponent
-        <div class="hint">1.0 = flat linear pricing (no bulk discount). Lower = steeper discount for bigger sizes. Real-world niche fragrance pricing (the data you found) works out to ≈0.65 — profit grows slower than volume as size increases.</div>
-      </label>
-      <input type="number" id="curveExp" value="0.65" step="0.01">
+      <div class="section-row">
+        <h2>Volume Pricing Curve <span class="curve-badge">market pattern</span></h2>
+        <label>Discount exponent
+          <div class="hint">1.0 = flat linear. Lower = steeper bulk discount. ≈0.65 matches real niche fragrance market data.</div>
+        </label>
+        <input type="number" id="curveExp" value="0.65" step="0.01">
+      </div>
     </div>
     <div class="card">
       <h2>Humanity &amp; Sustainability <span class="giving-badge">gives back</span></h2>
@@ -121,8 +143,32 @@
     </table>
     </div>
     <p class="note">
-      How this works: cost still scales precisely linear with volume (real materials cost is real). What changed is <strong>profit</strong> — instead of a flat percentage at every size, profit grows by size<sup>0.65</sup> instead of size<sup>1.0</sup>, so bigger bottles earn you more total profit but a smaller profit <em>percentage</em>, exactly like the market data you found. Refill price = cost without any packaging line items, plus the same profit curve. The 50ml row is your reference size, held fixed to match your target margin input exactly.
+      Profit grows by size<sup>0.65</sup> instead of size<sup>1.0</sup> — bigger bottles earn more total profit at a smaller margin percentage, matching real market pricing behavior. Refill price removes every packaging cost line item, including your custom extras above. The 50ml row is your reference size.
     </p>
+  </div>
+
+  <h2 class="section-title">🎁 Bundle Pricing</h2>
+  <p class="subtitle" style="margin-top:0;">Price a bundle like the Discovery Trio — add each item's individual price (pull it from the table above), set a bundle discount, and see the math.</p>
+
+  <div class="grid cols2">
+    <div class="card">
+      <h2>Bundle Items</h2>
+      <div class="header-row bundle">
+        <span class="col-label">Item</span><span class="col-label">Price (Rp)</span><span class="col-label">Cost (Rp)</span><span></span>
+      </div>
+      <div id="bundleItemsContainer"></div>
+      <button type="button" class="add-btn" id="addBundleItemBtn">+ Add item</button>
+
+      <label style="margin-top:20px;">Bundle discount (%)
+        <div class="hint">How much cheaper the bundle is vs. buying items separately</div>
+      </label>
+      <input type="number" id="bundleDiscountPct" value="15">
+    </div>
+
+    <div class="card">
+      <h2>Bundle Summary</h2>
+      <div id="bundleSummary"></div>
+    </div>
   </div>
 </div>
 
@@ -131,7 +177,113 @@ const SIZES = [5, 10, 15, 30, 50, 55, 100, 250, 500];
 const REF_SIZE = 50;
 const fmt = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
 function val(id){ return parseFloat(document.getElementById(id).value) || 0; }
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 
+/* ---------- Extra / Custom Costs ---------- */
+let extraCosts = [{ label: '', amount: '' }];
+
+function renderExtraCosts(){
+  const c = document.getElementById('extraCostsContainer');
+  c.innerHTML = extraCosts.map((row, i) => `
+    <div class="row-item" data-index="${i}">
+      <input type="text" class="extra-label" value="${esc(row.label)}" placeholder="e.g. Ribbon, QC time">
+      <input type="number" class="extra-amount" value="${row.amount}">
+      <button type="button" class="remove-btn extra-remove">×</button>
+    </div>`).join('');
+}
+
+document.getElementById('addExtraCostBtn').addEventListener('click', () => {
+  extraCosts.push({ label: '', amount: '' });
+  renderExtraCosts();
+});
+
+document.getElementById('extraCostsContainer').addEventListener('input', (e) => {
+  const row = e.target.closest('.row-item');
+  const i = parseInt(row.dataset.index);
+  if (e.target.classList.contains('extra-label')) extraCosts[i].label = e.target.value;
+  if (e.target.classList.contains('extra-amount')) extraCosts[i].amount = e.target.value;
+  calculate();
+});
+
+document.getElementById('extraCostsContainer').addEventListener('click', (e) => {
+  if (e.target.classList.contains('extra-remove')) {
+    const row = e.target.closest('.row-item');
+    const i = parseInt(row.dataset.index);
+    extraCosts.splice(i, 1);
+    if (extraCosts.length === 0) extraCosts.push({ label: '', amount: '' });
+    renderExtraCosts();
+    calculate();
+  }
+});
+
+function extraCostsTotal(){
+  return extraCosts.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+}
+
+/* ---------- Bundle Pricing ---------- */
+let bundleItems = [
+  { name: 'Dawn 10ml', price: '', cost: '' },
+  { name: 'Reverie 10ml', price: '', cost: '' },
+  { name: 'Hearth 10ml', price: '', cost: '' },
+];
+
+function renderBundleItems(){
+  const c = document.getElementById('bundleItemsContainer');
+  c.innerHTML = bundleItems.map((row, i) => `
+    <div class="row-item bundle" data-index="${i}">
+      <input type="text" class="bundle-name" value="${esc(row.name)}" placeholder="Item name">
+      <input type="number" class="bundle-price" value="${row.price}" placeholder="Price">
+      <input type="number" class="bundle-cost" value="${row.cost}" placeholder="Cost">
+      <button type="button" class="remove-btn bundle-remove">×</button>
+    </div>`).join('');
+}
+
+document.getElementById('addBundleItemBtn').addEventListener('click', () => {
+  bundleItems.push({ name: '', price: '', cost: '' });
+  renderBundleItems();
+});
+
+document.getElementById('bundleItemsContainer').addEventListener('input', (e) => {
+  const row = e.target.closest('.row-item');
+  const i = parseInt(row.dataset.index);
+  if (e.target.classList.contains('bundle-name')) bundleItems[i].name = e.target.value;
+  if (e.target.classList.contains('bundle-price')) bundleItems[i].price = e.target.value;
+  if (e.target.classList.contains('bundle-cost')) bundleItems[i].cost = e.target.value;
+  calculateBundle();
+});
+
+document.getElementById('bundleItemsContainer').addEventListener('click', (e) => {
+  if (e.target.classList.contains('bundle-remove')) {
+    const row = e.target.closest('.row-item');
+    const i = parseInt(row.dataset.index);
+    bundleItems.splice(i, 1);
+    renderBundleItems();
+    calculateBundle();
+  }
+});
+
+document.getElementById('bundleDiscountPct').addEventListener('input', calculateBundle);
+
+function calculateBundle(){
+  const sumPrice = bundleItems.reduce((s, r) => s + (parseFloat(r.price) || 0), 0);
+  const sumCost = bundleItems.reduce((s, r) => s + (parseFloat(r.cost) || 0), 0);
+  const discountPct = val('bundleDiscountPct');
+  const bundlePrice = sumPrice * (1 - discountPct/100);
+  const savings = sumPrice - bundlePrice;
+  const bundleProfit = bundlePrice - sumCost;
+  const bundleMargin = bundlePrice > 0 ? (bundleProfit/bundlePrice)*100 : 0;
+
+  const marginClass = bundleMargin >= 25 ? 'margin-good' : 'margin-warn';
+  document.getElementById('bundleSummary').innerHTML = `
+    <div class="summary-row"><span>Sum of individual prices</span><span>${fmt(sumPrice)}</span></div>
+    <div class="summary-row save"><span>Customer saves (${discountPct}%)</span><span>-${fmt(savings)}</span></div>
+    <div class="summary-row"><span>Total cost of items</span><span>${fmt(sumCost)}</span></div>
+    <div class="summary-row"><span>Bundle profit</span><span class="${marginClass}">${fmt(bundleProfit)} (${bundleMargin.toFixed(1)}%)</span></div>
+    <div class="summary-row"><span>Bundle price</span><span>${fmt(bundlePrice)}</span></div>
+  `;
+}
+
+/* ---------- Main size calculator ---------- */
 function liquidCostFor(size, oil50, alcohol50){
   return (oil50 + alcohol50) * (size / 50);
 }
@@ -139,7 +291,7 @@ function liquidCostFor(size, oil50, alcohol50){
 function calculate(){
   const oil50 = val('oilCost50');
   const alcohol50 = val('alcoholCost50');
-  const packaging = val('bottleCost')+val('capCost')+val('labelCost')+val('boxCost')+val('cardCost')+val('sealCost')+val('twineCost');
+  const packaging = val('bottleCost')+val('capCost')+val('labelCost')+val('boxCost')+val('cardCost')+val('sealCost')+val('twineCost')+extraCostsTotal();
   const bufferPct = val('bufferPct');
   const fixedMonthly = val('fixedMonthly');
   const unitsPerMonth = Math.max(1, val('unitsPerMonth'));
@@ -149,7 +301,6 @@ function calculate(){
 
   const overheadPerUnit = fixedMonthly / unitsPerMonth;
 
-  // total cost + profit at the 50ml reference size, to anchor the curve
   const refLiquid = liquidCostFor(REF_SIZE, oil50, alcohol50);
   const refSubtotal = refLiquid + packaging;
   const refBuffered = refSubtotal * (1 + bufferPct/100);
@@ -162,17 +313,14 @@ function calculate(){
   SIZES.forEach(size => {
     const liquidCost = liquidCostFor(size, oil50, alcohol50);
 
-    // New bottle: liquid + packaging + buffer + overhead
     const newSubtotal = liquidCost + packaging;
     const newBuffered = newSubtotal * (1 + bufferPct/100);
     const newTotalCost = newBuffered + overheadPerUnit;
 
-    // Refill: liquid only + buffer + overhead, no packaging
     const refillSubtotal = liquidCost;
     const refillBuffered = refillSubtotal * (1 + bufferPct/100);
     const refillTotalCost = refillBuffered + overheadPerUnit;
 
-    // profit follows the curve relative to the reference size profit
     const profit = refProfit * Math.pow(size / REF_SIZE, curveExp);
 
     const newPrice = newTotalCost + profit;
@@ -198,8 +346,12 @@ function calculate(){
   document.getElementById('sizeTable').innerHTML = rows;
 }
 
-document.querySelectorAll('input').forEach(el => el.addEventListener('input', calculate));
+document.querySelectorAll('.card input[id]').forEach(el => el.addEventListener('input', calculate));
+
+renderExtraCosts();
+renderBundleItems();
 calculate();
+calculateBundle();
 </script>
 </body>
 </html>

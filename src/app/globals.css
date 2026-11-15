@@ -11,12 +11,20 @@
   --brand-soft: #f5e3d8;
   --success: #226d54;
   --warning: #a14f35;
+
+  /* Frosted glass */
+  --glass-fill: rgba(255, 253, 249, 0.58);
+  --glass-fill-strong: rgba(255, 253, 249, 0.72);
+  --glass-edge: rgba(255, 255, 255, 0.7);
+  --glass-hairline: rgba(30, 42, 35, 0.08);
+  --glass-blur: blur(22px) saturate(170%);
+  --glass-shadow: 0 1px 0 rgba(255, 255, 255, 0.75) inset, 0 12px 34px rgba(30, 42, 35, 0.07);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--font-geist-sans), "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -27,44 +35,197 @@
 
   html {
     scroll-behavior: smooth;
+    background-color: var(--background);
   }
 
   body {
-    @apply min-h-screen bg-[#f5f1ea] text-[#1e2a23] antialiased;
-    font-family: Arial, Helvetica, sans-serif;
+    @apply min-h-screen font-sans text-[#1e2a23] antialiased;
+    /* Soft colour wash for the glass to blur: terracotta, green and peach over cream. */
+    background:
+      radial-gradient(52rem 38rem at 4% -8%, rgba(199, 92, 59, 0.26), transparent 62%),
+      radial-gradient(46rem 36rem at 102% 4%, rgba(34, 109, 84, 0.2), transparent 60%),
+      radial-gradient(54rem 42rem at 62% 108%, rgba(230, 160, 131, 0.3), transparent 62%),
+      radial-gradient(40rem 30rem at 20% 70%, rgba(168, 118, 62, 0.12), transparent 60%),
+      var(--background);
+    background-attachment: fixed;
   }
 
   a {
     @apply no-underline;
   }
+
+  :focus-visible {
+    outline: 2px solid rgba(199, 92, 59, 0.6);
+    outline-offset: 2px;
+  }
 }
 
 @layer components {
-  .surface {
-    @apply rounded-2xl border border-[#e6ddd0] bg-[#fffdf9] shadow-[0_10px_30px_rgba(30,42,35,0.04)];
+  /* Glass panels. `.surface` is the default card; the others share its recipe. */
+  .surface,
+  .surface-soft,
+  .metric-card,
+  .glass-sidebar,
+  .glass-bar {
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
   }
 
-  .surface-soft {
-    @apply rounded-2xl border border-[#eadfd2] bg-[#f8f2eb];
+  .surface,
+  .surface-soft,
+  .metric-card {
+    border: 1px solid var(--glass-edge);
+    border-radius: 1.5rem;
+    box-shadow: var(--glass-shadow);
+  }
+
+  .surface-soft,
+  .metric-card {
+    background: rgba(255, 253, 249, 0.42);
+    border-radius: 1.25rem;
+  }
+
+  .metric-card {
+    @apply p-5;
+  }
+
+  .surface-dark {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 1.5rem;
+    background: linear-gradient(160deg, rgba(38, 54, 46, 0.9), rgba(24, 34, 29, 0.86));
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset, 0 18px 40px rgba(30, 42, 35, 0.22);
+  }
+
+  /* A lighter, unblurred panel for use inside a surface (tables, list rows, tiles). */
+  .inset-panel {
+    border: 1px solid var(--glass-hairline);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .glass-sidebar {
+    background: var(--glass-fill-strong);
+    border-right: 1px solid var(--glass-edge);
+    box-shadow: 0 20px 50px rgba(30, 42, 35, 0.12);
+  }
+
+  @media (min-width: 64rem) {
+    .glass-sidebar {
+      inset-block: 0;
+      height: calc(100vh - 1.5rem);
+      border: 1px solid var(--glass-edge);
+      box-shadow: var(--glass-shadow);
+    }
+  }
+
+  .glass-bar {
+    background: rgba(250, 246, 240, 0.62);
+    border-bottom: 1px solid var(--glass-hairline);
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-[#4d5750] transition;
+  }
+
+  .sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--foreground);
+  }
+
+  .sidebar-link-active,
+  .sidebar-link-active:hover {
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--foreground);
+    font-weight: 600;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 4px 14px rgba(30, 42, 35, 0.08);
+  }
+
+  .sidebar-link-active svg {
+    color: var(--brand);
+  }
+
+  /* Segmented control: a group of buttons, the pressed one raised. */
+  .segmented {
+    @apply rounded-xl p-1;
+    border: 1px solid var(--glass-hairline);
+    background: rgba(30, 42, 35, 0.06);
+  }
+
+  .segmented button {
+    @apply rounded-lg text-[#5d665f] transition;
+  }
+
+  .segmented button:hover {
+    color: var(--foreground);
+  }
+
+  .segmented button[aria-pressed="true"] {
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--foreground);
+    box-shadow: 0 1px 3px rgba(30, 42, 35, 0.14);
+  }
+
+  /* Input shell: either the input itself or a wrapper around an input and its suffix. */
+  .field {
+    overflow: hidden;
+    border: 1px solid var(--glass-hairline);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.55);
+    transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+  }
+
+  .field:focus,
+  .field:focus-within {
+    border-color: rgba(199, 92, 59, 0.55);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 3px rgba(199, 92, 59, 0.14);
+    outline: none;
+  }
+
+  .input-field {
+    @apply mt-2 w-full rounded-xl px-3 py-3 text-sm text-[#1e2a23] outline-none transition placeholder:text-[#8a8178];
+    border: 1px solid var(--glass-hairline);
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .input-field:focus {
+    border-color: rgba(199, 92, 59, 0.55);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 3px rgba(199, 92, 59, 0.14);
   }
 
   .nav-link {
-    @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-[#5d665f] transition hover:bg-[#f2e8df] hover:text-[#1e2a23];
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-[#5d665f] transition hover:bg-white/60 hover:text-[#1e2a23];
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
+    max-width: 100%;
   }
 
   .primary-btn {
     @apply inline-flex items-center justify-center rounded-xl bg-[#1e2a23] px-4 py-3 text-sm font-semibold text-[#fffdf9] transition hover:bg-[#c75c3b] disabled:cursor-not-allowed disabled:bg-[#b7b2aa];
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 8px 18px rgba(30, 42, 35, 0.16);
   }
 
   .secondary-btn {
-    @apply inline-flex items-center justify-center rounded-xl border border-[#d9cfc2] bg-[#fffdf9] px-4 py-3 text-sm font-semibold text-[#1e2a23] transition hover:border-[#c75c3b] hover:text-[#c75c3b];
+    @apply inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold text-[#1e2a23] transition hover:text-[#c75c3b];
+    border: 1px solid var(--glass-edge);
+    background: rgba(255, 255, 255, 0.6);
   }
+}
 
-  .input-field {
-    @apply mt-2 w-full rounded-xl border border-[#e6ddd0] bg-[#f6f1eb] px-3 py-3 text-sm text-[#1e2a23] outline-none transition placeholder:text-[#8a8178] focus:border-[#1e2a23] focus:bg-white focus:ring-2 focus:ring-[#c75c3b]/15;
-  }
-
-  .metric-card {
-    @apply rounded-2xl border border-[#eadfd2] bg-[#f8f2eb] p-5;
+@media (prefers-reduced-transparency: reduce) {
+  .surface,
+  .surface-soft,
+  .metric-card,
+  .glass-sidebar,
+  .glass-bar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--panel);
   }
 }

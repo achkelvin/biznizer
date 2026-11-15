@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import {
   createCatalogProduct,
@@ -11,14 +10,12 @@ import {
 } from "@/lib/catalog/repository";
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { getCurrentUserRole, type StoreRole } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/client";
-import { LocaleControls } from "@/components/locale-controls";
+import { AppNav } from "@/components/top-nav";
 import { useLocale } from "@/lib/locale";
 
 const emptyForm = { name: "", sku: "", price: "", stock: "", categoryId: "" };
 
 export default function CatalogPage() {
-  const router = useRouter();
   const { formatMoney } = useLocale();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [categories, setCategories] = useState<CatalogCategory[]>([]);
@@ -40,10 +37,6 @@ export default function CatalogPage() {
     }
   }
 
-  async function signOut() {
-    await createClient().auth.signOut();
-    router.replace("/login");
-  }
 
   useEffect(() => {
     const loadTask = window.setTimeout(() => void loadCatalog(), 0);
@@ -73,22 +66,10 @@ export default function CatalogPage() {
   }
 
   return (
-    <main className="min-h-full flex-1 bg-[#f5f1ea] text-[#1e2a23]">
-      <header className="border-b border-[#e6ddd0] bg-[#fffdf9] px-6 py-5 shadow-[0_6px_18px_rgba(30,42,35,0.02)] sm:px-10">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#c75c3b]">Biznizer</p>
-            <h1 className="mt-1 text-xl font-semibold text-[#1e2a23]">Catalog management</h1>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <LocaleControls />
-            <a className="nav-link" href="/pos">Back to POS</a>
-            <button className="nav-link" onClick={() => void signOut()} type="button">Sign out</button>
-          </div>
-        </div>
-      </header>
+    <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]">
+      <AppNav title="Catalog" subtitle="Products available in the POS" />
 
-      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 lg:grid-cols-[1.2fr_360px]">
+      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="surface p-5 sm:p-6">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
@@ -98,8 +79,8 @@ export default function CatalogPage() {
             <span className="rounded-full bg-[#f5e3d8] px-2.5 py-1 text-xs font-medium text-[#a14f35]">{status}</span>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-[#e6ddd0] bg-[#fffdf9]">
-            <div className="grid grid-cols-[1fr_110px_90px] border-b border-[#e6ddd0] bg-[#faf5f0] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#5d665f]">
+          <div className="overflow-hidden inset-panel">
+            <div className="grid grid-cols-[1fr_110px_90px] border-b border-[#1e2a23]/10 bg-white/40 px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#5d665f]">
               <span>Product</span>
               <span>SKU</span>
               <span className="text-right">Stock</span>
@@ -108,7 +89,7 @@ export default function CatalogPage() {
               <p className="p-8 text-sm text-[#5d665f]">No products found for this store.</p>
             ) : (
               products.map((product) => (
-                <div className="grid grid-cols-[1fr_110px_90px] items-center border-b border-[#efe8e1] px-5 py-4 last:border-0" key={product.id}>
+                <div className="grid grid-cols-[1fr_110px_90px] items-center border-b border-[#1e2a23]/10 px-5 py-4 last:border-0" key={product.id}>
                   <div>
                     <p className="font-semibold text-[#1e2a23]">{product.name}</p>
                     <p className="mt-1 text-sm text-[#5d665f]">{product.category} · {formatMoney(product.price)}</p>
@@ -122,7 +103,7 @@ export default function CatalogPage() {
         </section>
 
         {role === "owner" || role === "manager" ? (
-          <form className="surface h-fit p-5 sm:p-6 lg:sticky lg:top-6" onSubmit={(event) => void handleSubmit(event)}>
+          <form className="surface h-fit p-5 sm:p-6 xl:sticky xl:top-24" onSubmit={(event) => void handleSubmit(event)}>
             <div className="mb-5">
               <h2 className="text-xl font-semibold text-[#1e2a23]">Add product</h2>
               <p className="mt-2 text-sm leading-6 text-[#5d665f]">New products become available in the POS after saving.</p>
@@ -162,7 +143,7 @@ export default function CatalogPage() {
             <button className="primary-btn mt-6 w-full py-4" disabled={isSaving} type="submit">{isSaving ? "Saving..." : "Add to catalog"}</button>
           </form>
         ) : (
-          <aside className="surface h-fit p-5 sm:p-6 lg:sticky lg:top-6">
+          <aside className="surface h-fit p-5 sm:p-6 xl:sticky xl:top-24">
             <h2 className="text-xl font-semibold text-[#1e2a23]">Read-only catalog</h2>
             <p className="mt-2 text-sm leading-6 text-[#5d665f]">Your staff role can view products, but only managers and owners can change the catalog.</p>
           </aside>

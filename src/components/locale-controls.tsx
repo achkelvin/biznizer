@@ -6,14 +6,16 @@ export function LocaleControls() {
   const { language, currency, rate, rateStatus, setLanguage, setCurrency } = useLocale();
 
   return (
-    <div className="flex items-center gap-2 text-xs">
-      <div className="flex border border-[#d8d4ca] bg-[#fffdf8] p-1">
-        {(["en", "id"] as const).map((option) => <button className={`px-2 py-1 font-semibold uppercase ${language === option ? "bg-[#1d2a24] text-[#fffdf8]" : "text-[#69736b]"}`} key={option} onClick={() => setLanguage(option)} type="button">{option}</button>)}
+    <div className="space-y-2 text-xs">
+      <div className="grid grid-cols-2 gap-2">
+        <div aria-label={language === "id" ? "Bahasa" : "Language"} className="segmented grid grid-cols-2" role="group">
+          {(["en", "id"] as const).map((option) => <button aria-pressed={language === option} className="px-2 py-1.5 font-semibold uppercase" key={option} onClick={() => setLanguage(option)} type="button">{option}</button>)}
+        </div>
+        <div aria-label={language === "id" ? "Mata uang" : "Currency"} className="segmented grid grid-cols-2" role="group">
+          {(["USD", "IDR"] as const).map((option) => <button aria-pressed={currency === option} className="px-2 py-1.5 font-semibold" key={option} onClick={() => setCurrency(option)} type="button">{option === "USD" ? "$" : "Rp"}</button>)}
+        </div>
       </div>
-      <div className="flex border border-[#d8d4ca] bg-[#fffdf8] p-1">
-        {(["USD", "IDR"] as const).map((option) => <button className={`px-2 py-1 font-semibold ${currency === option ? "bg-[#a8763e] text-[#fffdf8]" : "text-[#69736b]"}`} key={option} onClick={() => setCurrency(option)} type="button">{option === "USD" ? "$" : "Rp"}</button>)}
-      </div>
-      <span className="hidden text-[#8a7f74] sm:inline">1 USD = {rate.toLocaleString("id-ID")} IDR {rateStatus === "live" ? "· live" : "· cached"}</span>
+      <p className="px-1 text-[11px] text-[#8a7f74]">1 USD = {Math.round(rate).toLocaleString("id-ID")} IDR · {rateStatus === "live" ? "live" : "cached"}</p>
     </div>
   );
 }
