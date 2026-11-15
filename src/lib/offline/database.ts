@@ -19,6 +19,7 @@ export class BiznizerDatabase extends Dexie {
   catalogProducts!: EntityTable<CatalogProduct, "id">;
   // Demo-mode tables: the whole "database" when login is switched off. See src/lib/demo/store.ts.
   demoProducts!: EntityTable<CatalogProduct, "id">;
+  demoCategories!: EntityTable<{ id: string; name: string }, "id">;
   demoSales!: EntityTable<SaleDetail, "id">;
   demoMovements!: EntityTable<InventoryMovement, "id">;
   demoBatches!: EntityTable<ProductionBatch, "id">;
@@ -36,6 +37,9 @@ export class BiznizerDatabase extends Dexie {
       demoMovements: "id, createdAt",
       demoBatches: "id, createdAt",
       demoMembers: "userId",
+    });
+    this.version(5).stores({
+      demoCategories: "id",
     });
   }
 }

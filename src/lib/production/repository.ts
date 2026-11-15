@@ -1,4 +1,4 @@
-import { demoCreateProductionBatch, demoGetProductionBatches } from "@/lib/demo/store";
+import { demoCreateProductionBatch, demoDeleteProductionBatch, demoGetProductionBatches, demoSetProductionBatchStatus } from "@/lib/demo/store";
 import { getStoreId, isAuthDisabled } from "@/lib/env";
 import type { ProductionInputs, ProductionResults } from "@/lib/production/calculator";
 import { createClient } from "@/lib/supabase/client";
@@ -57,5 +57,21 @@ export async function createProductionBatch(inputs: ProductionInputs, results: P
     total_units: results.totalUnits,
     total_cost: results.grandTotal,
   });
+  if (error) throw error;
+}
+
+export async function setProductionBatchStatus(batchId: string, status: ProductionBatch["status"]) {
+  if (isAuthDisabled()) return demoSetProductionBatchStatus(batchId, status);
+  const storeId = getStoreId();
+  if (!storeId) throw new Error("Configure a valid store before updating production batches.");
+  const { error } = await createClient().from("production_batches").update({ status }).eq("store_id", storeId).eq("id", batchId);
+  if (error) throw error;
+}
+
+export async function deleteProductionBatch(batchId: string) {
+  if (isAuthDisabled()) return demoDeleteProductionBatch(batchId);
+  const storeId = getStoreId();
+  if (!storeId) throw new Error("Configure a valid store before deleting production batches.");
+  const { error } = await createClient().from("production_batches").delete().eq("store_id", storeId).eq("id", batchId);
   if (error) throw error;
 }

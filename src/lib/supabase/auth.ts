@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import { DEMO_ROLE, demoGetTeamMembers, demoSetTeamMemberRole } from "@/lib/demo/store";
+import { DEMO_ROLE, demoGetTeamMembers, demoRemoveTeamMember, demoSetTeamMemberRole } from "@/lib/demo/store";
 import { getStoreId, isAuthDisabled } from "@/lib/env";
 
 export type StoreRole = "owner" | "manager" | "staff";
@@ -66,5 +66,22 @@ export async function setTeamMemberRole(userId: string, role: StoreRole) {
   if (storeError) throw storeError;
 
   const { error } = await supabase.from("organization_members").upsert({ organization_id: store.organization_id, user_id: userId, role }, { onConflict: "organization_id,user_id" });
+  if (error) throw error;
+}
+
+/** Removes a user from the store's organization. You cannot remove yourself, so you can never lock yourself out. */
+export async function removeTeamMember(userId: string) {
+  if (isAuthDisabled()) return demoRemoveTeamMember(userId);
+  const supabase = createClient();
+  const storeId = getStoreId();
+  if (!storeId) throw new Error("Configure a store before managing team roles.");
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user?.id === userId) throw new Error("You cannot remove yourself from the team.");
+
+  const { data: store, error: storeError } = await supabase.from("stores").select("organization_id").eq("id", storeId).single();
+  if (storeError) throw storeError;
+
+  const { error } = await supabase.from("organization_members").delete().eq("organization_id", store.organization_id).eq("user_id", userId);
   if (error) throw error;
 }

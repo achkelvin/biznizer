@@ -131,14 +131,14 @@ Each folder is a URL. `src/app/pos/page.tsx` is the page at `/pos`.
 | `page.tsx` | `/` | Dashboard: four stat cards, recent sales, quick links |
 | `login/page.tsx` | `/login` | Sign in or create an account with Supabase |
 | `pos/page.tsx` | `/pos` | The till. Pick products, choose a payment method, record the sale. If offline, the sale is queued and sent later |
-| `catalog/page.tsx` | `/catalog` | Product list and the "add product" form |
+| `catalog/page.tsx` | `/catalog` | Product list with Edit and Delete on each row, one form that both adds and edits, and a Categories card (add, rename, delete) |
 | `inventory/page.tsx` | `/inventory` | Stock levels, low-stock warning, stock adjustments and their history |
 | `sales/page.tsx` | `/sales` | Sales list with totals for today or the last 50 |
 | `sales/[saleId]/page.tsx` | `/sales/<id>` | One receipt. `[saleId]` in the folder name means "any value here", read with `use(params)` |
 | `analytics/page.tsx` | `/analytics` | Revenue for a chosen period, a seven-day bar chart, payment mix, top receipts |
 | `pricing/page.tsx` | `/pricing` | Pricing calculator: cost per size, new-bottle and refill prices, bundles. Pure calculation, saves nothing |
-| `production/page.tsx` | `/production` | Batch planner: how much oil, alcohol and packaging a batch needs and what it costs. Can save the batch |
-| `team/page.tsx` | `/team` | Owners assign roles to users |
+| `production/page.tsx` | `/production` | Batch planner: how much oil, alcohol and packaging a batch needs and what it costs. Can save the batch, change a saved batch's status, and delete it |
+| `team/page.tsx` | `/team` | Owners add users, change their role, and remove them |
 
 **Glass classes in `globals.css`** (use these instead of repeating styles):
 
@@ -176,7 +176,7 @@ Each folder is a URL. `src/app/pos/page.tsx` is the page at `/pos`.
 | --- | --- |
 | `supabase/client.ts` | `createClient()` for code running in the browser |
 | `supabase/server.ts` | `createClient()` for code running on the server (reads login cookies). Not used by any page yet |
-| `supabase/auth.ts` | `getCurrentUserRole()`, `getTeamMembers()`, `setTeamMemberRole()` |
+| `supabase/auth.ts` | `getCurrentUserRole()`, `getTeamMembers()`, `setTeamMemberRole()` (adds a member or changes their role), `removeTeamMember()` |
 | `supabase/proxy.ts` | `updateSession()`: runs on the server before a page loads. Sends signed-out visitors to `/login` and blocks pages your role cannot use |
 | `src/proxy.ts` | Tells Next.js to run `updateSession` and for which URLs (`matcher`). Today the list is only `/pos`, `/catalog` and `/login`, so the other pages are protected by the database rules and the page's own role check, not by this file. In this Next.js version the file is called `proxy`; older versions called it `middleware` |
 
@@ -185,13 +185,13 @@ Each folder is a URL. `src/app/pos/page.tsx` is the page at `/pos`.
 | File | Functions | Use |
 | --- | --- | --- |
 | `catalog/types.ts` | `CatalogProduct` | The shape of a product: id, name, category, price, stock, sku |
-| `catalog/repository.ts` | `refreshCatalog`, `getCachedCatalog`, `getCatalogCategories`, `createCatalogProduct` | Load and add products. `refreshCatalog` also saves a copy in the browser so the POS works offline |
+| `catalog/repository.ts` | `refreshCatalog`, `getCachedCatalog`, `createCatalogProduct`, `updateCatalogProduct`, `deleteCatalogProduct`, `getCatalogCategories`, `createCatalogCategory`, `renameCatalogCategory`, `deleteCatalogCategory` | Everything for products and categories. `refreshCatalog` also saves a copy in the browser so the POS works offline |
 | `catalog/demo-products.ts` | `demoProducts` | Four sample perfumes |
 | `sales/repository.ts` | `toSalePayload`, `recordSale` | Turn a cart into a sale (grouping repeated products into quantities) and save it |
 | `sales/history.ts` | `getRecentSales`, `getSaleDetail` | Read past sales and one receipt |
 | `inventory/repository.ts` | `getInventoryMovements`, `adjustInventory` | Stock history and manual stock changes |
 | `production/calculator.ts` | `calculateProduction` | Pure maths: from bottle counts and costs to litres of liquid, packaging needed and total cost. No database |
-| `production/repository.ts` | `getProductionBatches`, `createProductionBatch` | Load and save planned batches |
+| `production/repository.ts` | `getProductionBatches`, `createProductionBatch`, `setProductionBatchStatus`, `deleteProductionBatch` | Load, save, update and delete batches |
 | `offline/database.ts` | `offlineDatabase` | The browser database (Dexie). Tables: `pendingSales` (sales waiting to sync), `catalogProducts` (offline copy of the catalog), and the `demo*` tables used by demo mode |
 | `demo/store.ts` | `demoGetCatalog`, `demoRecordSale`, ... | The demo-mode version of every repository function. Mirrors what Supabase does: a sale lowers stock, an adjustment writes a movement, and so on |
 
@@ -222,7 +222,33 @@ Migrations are SQL files that run in date order to build the database.
 6. The POS reloads the catalog so the stock numbers update.
 7. `/sales` and `/analytics` read it back through `getRecentSales`.
 
-## 8. How to do common things
+## 8. What can be created, changed and deleted (CRUD)
+
+CRUD means Create, Read, Update, Delete: the four things you can do to a record.
+
+| Record | Create | Read | Update | Delete | Where |
+| --- | --- | --- | --- | --- | --- |
+| Product | yes | yes | name, SKU, price, category | yes (archived, see below) | `/catalog` |
+| Category | yes | yes | rename | yes | `/catalog` |
+| Stock level | set when a product is created | yes | through an adjustment | no | `/inventory` |
+| Stock movement | one per adjustment | yes | no | no | `/inventory` |
+| Sale | yes | yes | no | no | `/pos`, `/sales` |
+| Production batch | yes | yes | status | yes | `/production` |
+| Team member | yes | yes | role | yes | `/team` |
+
+Some things are left out on purpose:
+
+- **Sales and stock movements cannot be edited or deleted.** They are the shop's records. If a sale was wrong, the fix is a new entry (a stock adjustment), not rewriting history.
+- **Stock is not edited on the product form.** It changes only through a sale or an adjustment, so there is always a logged reason.
+- **Deleting a product archives it in Supabase** (`active = false`) instead of removing the row, because old receipts still point at it. It disappears from the catalog and POS. One side effect: its SKU stays taken, so a new product cannot reuse that SKU.
+- **Deleting a category keeps its products.** They become "Uncategorized".
+- **You cannot remove yourself from the team**, so you cannot lock yourself out.
+
+Every delete button asks twice: the first click turns it into Confirm / Cancel.
+
+No database change was needed for any of this. The existing policies already let managers and owners update and delete products, categories and batches, and let owners manage members.
+
+## 9. How to do common things
 
 - **Add a page:** create `src/app/<name>/page.tsx`, start it with `<AppNav title="..." />`, then add it to `navGroups` in `src/components/app-sidebar.tsx`. If it should be restricted, also add its path to `roleCanAccess` in `src/lib/supabase/proxy.ts`.
 - **Add a new kind of data:** write a migration for the table, add a repository function in `src/lib`, add the matching function in `src/lib/demo/store.ts` (and a table in `src/lib/offline/database.ts`), then call the repository function from the page.
