@@ -77,7 +77,7 @@ Note: at the time of writing, the Supabase address in `.env.local` does not reso
 | Area | staff | manager | owner |
 | --- | --- | --- | --- |
 | Dashboard, Analytics, POS, Sales | yes | yes | yes |
-| Catalog, Inventory, Pricing, Production | no | yes | yes |
+| Catalog, Inventory, Pricing, Production, Reports | no | yes | yes |
 | Team | no | no | yes |
 
 The rule is enforced in three places: the database (Supabase policies), the server (`src/lib/supabase/proxy.ts`), and the sidebar (which just hides links you cannot use).
@@ -136,6 +136,7 @@ Each folder is a URL. `src/app/pos/page.tsx` is the page at `/pos`.
 | `sales/page.tsx` | `/sales` | Sales list with totals for today or the last 50 |
 | `sales/[saleId]/page.tsx` | `/sales/<id>` | One receipt. `[saleId]` in the folder name means "any value here", read with `use(params)` |
 | `analytics/page.tsx` | `/analytics` | Revenue for a chosen period, a seven-day bar chart, payment mix, top receipts |
+| `reports/page.tsx` | `/reports` | Reports for a chosen period: summary, sales by product, payment methods, sales by day, stock on hand, production. Each table exports to CSV, and Print gives a plain version. See section 9 |
 | `pricing/page.tsx` | `/pricing` | Pricing calculator: cost per size, new-bottle and refill prices, bundles. Pure calculation, saves nothing |
 | `production/page.tsx` | `/production` | Batch planner: how much oil, alcohol and packaging a batch needs and what it costs. Can save the batch, change a saved batch's status, and delete it |
 | `team/page.tsx` | `/team` | Owners add users, change their role, and remove them |
@@ -151,6 +152,7 @@ Each folder is a URL. `src/app/pos/page.tsx` is the page at `/pos`.
 | `segmented` | A group of toggle buttons; the pressed one has `aria-pressed="true"` |
 | `field`, `input-field` | Input boxes |
 | `pill` | Small status label |
+| `no-print`, `print-only` | Hide something when printing, or show it only when printing |
 | `primary-btn`, `secondary-btn`, `nav-link`, `sidebar-link` | Buttons and links |
 
 ### `src/components` — shared UI
@@ -188,7 +190,9 @@ Each folder is a URL. `src/app/pos/page.tsx` is the page at `/pos`.
 | `catalog/repository.ts` | `refreshCatalog`, `getCachedCatalog`, `createCatalogProduct`, `updateCatalogProduct`, `deleteCatalogProduct`, `getCatalogCategories`, `createCatalogCategory`, `renameCatalogCategory`, `deleteCatalogCategory` | Everything for products and categories. `refreshCatalog` also saves a copy in the browser so the POS works offline |
 | `catalog/demo-products.ts` | `demoProducts` | Four sample perfumes |
 | `sales/repository.ts` | `toSalePayload`, `recordSale` | Turn a cart into a sale (grouping repeated products into quantities) and save it |
-| `sales/history.ts` | `getRecentSales`, `getSaleDetail` | Read past sales and one receipt |
+| `sales/history.ts` | `getRecentSales`, `getSaleDetail`, `getSalesInRange` | Read the latest 50 sales, one receipt, or every sale (with its items) between two dates |
+| `reports/summary.ts` | `buildSalesReport`, `localDateKey`, `startOfLocalDay`, `addDays` | Pure maths: adds loaded sales up into totals, per day, per product and per payment method. No database |
+| `reports/csv.ts` | `toCsv`, `downloadCsv` | Turns table rows into a `.csv` file the browser downloads |
 | `inventory/repository.ts` | `getInventoryMovements`, `adjustInventory` | Stock history and manual stock changes |
 | `production/calculator.ts` | `calculateProduction` | Pure maths: from bottle counts and costs to litres of liquid, packaging needed and total cost. No database |
 | `production/repository.ts` | `getProductionBatches`, `createProductionBatch`, `setProductionBatchStatus`, `deleteProductionBatch` | Load, save, update and delete batches |
@@ -248,7 +252,39 @@ Every delete button asks twice: the first click turns it into Confirm / Cancel.
 
 No database change was needed for any of this. The existing policies already let managers and owners update and delete products, categories and batches, and let owners manage members.
 
-## 9. How to do common things
+## 9. Reports
+
+`/reports` answers "how did the shop do between these two dates?".
+
+**How it works**
+
+1. You pick a period: Today, 7 days, 30 days, This month, or Custom dates.
+2. The page calls `getSalesInRange(from, to)` to load every sale in that period with its items.
+3. `buildSalesReport` in `src/lib/reports/summary.ts` adds them up. The page only displays the result.
+4. Stock and production come from the functions the other pages already use (`refreshCatalog`, `getProductionBatches`).
+
+**What each section means**
+
+| Section | Meaning |
+| --- | --- |
+| Revenue | Sum of sale totals in the period |
+| Units sold | Sum of item quantities |
+| Average ticket | Revenue divided by number of sales |
+| Production spend | Total cost of batches saved in the period, leaving out cancelled ones |
+| Sales by product | Units and revenue per product; share is that product's part of revenue |
+| Payment methods | Number of sales and revenue per method |
+| Sales by day | One row per day, including days with nothing sold |
+| Stock on hand | Stock **right now** (not for the period), and its value at selling price |
+
+**Things to know**
+
+- A "day" is a day in the viewer's own time zone. A sale at 11pm counts for that evening, not the next day.
+- There is no profit figure, because products do not store what they cost to make. Production spend is shown beside revenue, but it is not the cost of the items sold.
+- "Retail value" of stock is what it would sell for, not what it cost.
+- Production uses the latest 50 batches, so a very long period could miss older ones.
+- CSV amounts are plain numbers in the currency selected in the sidebar, so a spreadsheet can add them up.
+
+## 10. How to do common things
 
 - **Add a page:** create `src/app/<name>/page.tsx`, start it with `<AppNav title="..." />`, then add it to `navGroups` in `src/components/app-sidebar.tsx`. If it should be restricted, also add its path to `roleCanAccess` in `src/lib/supabase/proxy.ts`.
 - **Add a new kind of data:** write a migration for the table, add a repository function in `src/lib`, add the matching function in `src/lib/demo/store.ts` (and a table in `src/lib/offline/database.ts`), then call the repository function from the page.

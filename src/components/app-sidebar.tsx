@@ -37,6 +37,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "/", label: ["Dashboard", "Dasbor"], icon: <Icon><rect height="7" rx="1.5" width="7" x="3" y="3" /><rect height="7" rx="1.5" width="7" x="14" y="3" /><rect height="7" rx="1.5" width="7" x="3" y="14" /><rect height="7" rx="1.5" width="7" x="14" y="14" /></Icon> },
       { href: "/analytics", label: ["Analytics", "Analitik"], icon: <Icon><path d="M4 20V10M10 20V4M16 20v-7M21 20H3" /></Icon> },
+      { href: "/reports", label: ["Reports", "Laporan"], roles: MANAGERS, icon: <Icon><path d="M7 3h7l5 5v13H7z" /><path d="M14 3v5h5M10 13h6M10 17h6" /></Icon> },
     ],
   },
   {
@@ -119,7 +120,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     .filter((group) => group.items.length > 0);
 
   return (
-    <div className="flex min-h-screen flex-1 flex-col lg:pl-[17rem]">
+    <div className="app-content flex min-h-screen flex-1 flex-col lg:pl-[17rem]">
       <div className="glass-bar sticky top-0 z-30 flex h-14 items-center justify-between px-4 lg:hidden">
         <Link className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#c75c3b]" href="/">Biznizer</Link>
         <button aria-controls="app-sidebar" aria-expanded={isOpen} aria-label={language === "id" ? "Buka menu" : "Open menu"} className="rounded-xl p-2 text-[#1e2a23] hover:bg-white/60" onClick={() => setOpenOn(isOpen ? null : pathname)} type="button">

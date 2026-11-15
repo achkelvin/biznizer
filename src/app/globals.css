@@ -229,3 +229,39 @@
     background: var(--panel);
   }
 }
+
+/* Printing a report: drop the sidebar, glass and buttons so the page is plain black on white. */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  #app-sidebar,
+  .glass-bar,
+  .no-print {
+    display: none !important;
+  }
+
+  .app-content {
+    padding-left: 0 !important;
+  }
+
+  .surface,
+  .inset-panel {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: #fff;
+    border-color: #ddd;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
+
+.print-only {
+  display: none;
+}

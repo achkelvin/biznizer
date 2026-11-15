@@ -123,6 +123,11 @@ export async function demoGetSaleDetail(saleId: string): Promise<SaleDetail | nu
   return (await db.demoSales.get(saleId)) ?? null;
 }
 
+export async function demoGetSalesInRange(from: Date, to: Date): Promise<SaleDetail[]> {
+  // ISO timestamps sort in time order, so a text range on createdAt is a date range.
+  return db.demoSales.where("createdAt").between(from.toISOString(), to.toISOString(), true, false).reverse().toArray();
+}
+
 // ---------- Inventory ----------
 
 export async function demoGetInventoryMovements(): Promise<InventoryMovement[]> {
