@@ -63,55 +63,55 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]">
+    <main className="min-h-full min-w-0 flex-1 text-ink">
       <AppNav
         title="Dashboard"
         subtitle="Sales, stock, and production in one place"
         right={
-          <span className={`pill ${loadState === "error" ? "bg-[#fbeae5] text-[#a14f35]" : "bg-[#eaf4ef] text-[#226d54]"}`}>
-            <span aria-hidden="true">●</span>
+          <span className={`pill ${loadState === "error" ? "bg-danger-soft text-brand-strong" : "bg-success-soft text-success"}`}>
+            <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
             {loadState === "loading" ? "Loading store data" : loadState === "ready" ? "Store snapshot updated" : "Store data unavailable"}
           </span>
         }
       />
 
       <div className="mx-auto max-w-7xl space-y-6 p-5 sm:p-8 lg:p-10">
-        {loadState === "error" ? <p className="break-words rounded-2xl border border-[#f0d4ca] bg-[#fff3ee]/80 px-4 py-3 text-sm text-[#a14f35]" role="alert">{errorMessage}</p> : null}
+        {loadState === "error" ? <p className="break-words rounded-2xl border border-danger-line bg-danger-soft/80 px-4 py-3 text-sm text-brand-strong" role="alert">{errorMessage}</p> : null}
 
-        <section aria-label="Store snapshot" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section aria-label="Store snapshot" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {stats.map((stat) => (
             <div className="surface p-5" key={stat.label}>
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8a8178]">{stat.label}</p>
-              <p className={`mt-3 truncate text-3xl font-semibold tracking-tight ${stat.alert ? "text-[#c75c3b]" : ""}`}>{stat.value}</p>
-              <p className="mt-1.5 text-sm text-[#5d665f]">{stat.note}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-subtle">{stat.label}</p>
+              <p className={`mt-3 truncate text-3xl font-semibold tracking-tight ${stat.alert ? "text-brand-strong" : ""}`}>{stat.value}</p>
+              <p className="mt-1.5 text-sm text-muted">{stat.note}</p>
             </div>
           ))}
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
           <section className="surface p-5 sm:p-6">
             <div className="mb-4 flex items-center justify-between gap-4">
               <h2 className="text-lg font-semibold">Recent sales</h2>
-              <Link className="text-sm font-medium text-[#a14f35] hover:text-[#1e2a23]" href="/sales">View all</Link>
+              <Link className="text-sm font-medium text-brand-strong hover:text-ink" href="/sales">View all</Link>
             </div>
 
             <div className="inset-panel overflow-hidden">
-              <div className="grid grid-cols-[1fr_90px_110px] border-b border-[#1e2a23]/10 bg-white/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#5d665f]">
+              <div className="grid grid-cols-[1fr_90px_110px] border-b border-ink/10 bg-white/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted">
                 <span>Receipt</span>
                 <span>Method</span>
                 <span className="text-right">Total</span>
               </div>
 
               {recentSales.length === 0 ? (
-                <p className="p-6 text-sm text-[#5d665f]">{loadState === "loading" ? "Loading sales..." : "No sales tied to this store yet."}</p>
+                <p className="p-6 text-sm text-muted">{loadState === "loading" ? "Loading sales..." : "No sales tied to this store yet."}</p>
               ) : (
                 recentSales.map((sale) => (
-                  <Link className="grid grid-cols-[1fr_90px_110px] items-center border-b border-[#1e2a23]/10 px-4 py-3.5 transition last:border-0 hover:bg-white/70" href={`/sales/${sale.id}`} key={sale.id}>
+                  <Link className="grid grid-cols-[1fr_90px_110px] items-center border-b border-ink/10 px-4 py-3.5 transition last:border-0 hover:bg-white/70" href={`/sales/${sale.id}`} key={sale.id}>
                     <div className="min-w-0">
-                      <p className="truncate font-mono text-xs text-[#5d665f]">{sale.id}</p>
+                      <p className="truncate font-mono text-xs text-muted">{sale.id}</p>
                       <p className="mt-1 text-sm">{new Date(sale.createdAt).toLocaleDateString()}</p>
                     </div>
-                    <span className="text-sm capitalize text-[#5d665f]">{sale.paymentMethod}</span>
+                    <span className="text-sm capitalize text-muted">{sale.paymentMethod}</span>
                     <span className="text-right font-semibold">{formatMoney(sale.total)}</span>
                   </Link>
                 ))
@@ -127,9 +127,9 @@ export default function Home() {
                   <Link className="inset-panel group flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-white/80" href={action.href}>
                     <span className="min-w-0">
                       <span className="block text-sm font-semibold">{action.title}</span>
-                      <span className="mt-0.5 block truncate text-xs text-[#5d665f]">{action.description}</span>
+                      <span className="mt-0.5 block truncate text-xs text-muted">{action.description}</span>
                     </span>
-                    <span aria-hidden="true" className="text-[#8a8178] transition group-hover:translate-x-0.5 group-hover:text-[#c75c3b]">→</span>
+                    <span aria-hidden="true" className="text-subtle transition group-hover:translate-x-0.5 group-hover:text-brand-strong">→</span>
                   </Link>
                 </li>
               ))}

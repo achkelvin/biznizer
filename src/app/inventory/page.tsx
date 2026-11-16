@@ -52,44 +52,44 @@ export default function InventoryPage() {
 
 
   if (role !== "owner" && role !== "manager") {
-    return <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]"><AppNav title="Inventory" /><div className="mx-auto max-w-2xl p-6 sm:p-10"><p className="rounded-2xl border border-[#f0d4ca] bg-[#fff3ee] px-4 py-3 text-sm text-[#a14f35]">This inventory workspace is restricted to managers and owners.</p></div></main>;
+    return <main className="min-h-full min-w-0 flex-1 text-ink"><AppNav title="Inventory" /><div className="mx-auto max-w-2xl p-6 sm:p-10"><p className="rounded-2xl border border-danger-line bg-danger-soft px-4 py-3 text-sm text-brand-strong">This inventory workspace is restricted to managers and owners.</p></div></main>;
   }
 
   return (
-    <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]">
+    <main className="min-h-full min-w-0 flex-1 text-ink">
       <AppNav title="Inventory" subtitle="Stock levels and adjustments" />
 
-      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="mx-auto grid grid-cols-1 max-w-7xl gap-6 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="surface p-5 sm:p-6">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm text-[#5d665f]">Current stock</p>
-              <h2 className="mt-1 text-3xl font-semibold tracking-tight text-[#1e2a23]">Inventory overview</h2>
+              <p className="text-sm text-muted">Current stock</p>
+              <h2 className="mt-1 text-3xl font-semibold tracking-tight text-ink">Inventory overview</h2>
             </div>
-            <span className="rounded-full bg-[#f5e3d8] px-2.5 py-1 text-xs font-medium text-[#a14f35]">{status}</span>
+            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand-strong">{status}</span>
           </div>
 
-          <div className="mb-5 inset-panel p-4 text-sm text-[#5d665f]">
-            Low stock alert: <span className="font-semibold text-[#a14f35]">{lowStock.length} product(s)</span> at 5 or below.
+          <div className="mb-5 inset-panel p-4 text-sm text-muted">
+            Low stock alert: <span className="font-semibold text-brand-strong">{lowStock.length} product(s)</span> at 5 or below.
           </div>
 
           <div className="overflow-hidden inset-panel">
-            <div className="grid grid-cols-[1fr_100px_120px] border-b border-[#1e2a23]/10 bg-white/40 px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#5d665f]">
+            <div className="grid grid-cols-[1fr_100px_120px] border-b border-ink/10 bg-white/40 px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted">
               <span>Product</span>
               <span>Stock</span>
               <span className="text-right">Status</span>
             </div>
 
             {products.length === 0 ? (
-              <p className="p-8 text-sm text-[#5d665f]">No products in inventory yet.</p>
+              <p className="p-8 text-sm text-muted">No products in inventory yet.</p>
             ) : (
               products.map((product) => (
-                <div className="grid grid-cols-[1fr_100px_120px] items-center border-b border-[#1e2a23]/10 px-5 py-4 last:border-0" key={product.id}>
+                <div className="grid grid-cols-[1fr_100px_120px] items-center border-b border-ink/10 px-5 py-4 last:border-0" key={product.id}>
                   <div>
-                    <p className="font-semibold text-[#1e2a23]">{product.name}</p>
+                    <p className="font-semibold text-ink">{product.name}</p>
                   </div>
-                  <span className="text-sm text-[#5d665f]">{product.stock}</span>
-                  <span className={`text-right text-sm font-semibold ${product.stock <= 5 ? "text-[#c75c3b]" : "text-[#226d54]"}`}>
+                  <span className="text-sm text-muted">{product.stock}</span>
+                  <span className={`text-right text-sm font-semibold ${product.stock <= 5 ? "text-brand-strong" : "text-success"}`}>
                     {product.stock <= 5 ? "Low" : "Healthy"}
                   </span>
                 </div>
@@ -98,22 +98,22 @@ export default function InventoryPage() {
           </div>
 
           <div className="mt-8 inset-panel p-5 sm:p-6">
-            <h3 className="text-xl font-semibold text-[#1e2a23]">Recent inventory movements</h3>
+            <h3 className="text-xl font-semibold text-ink">Recent inventory movements</h3>
             <div className="mt-4 space-y-3">
               {movements.length === 0 ? (
-                <p className="text-sm text-[#5d665f]">No adjustments recorded yet.</p>
+                <p className="text-sm text-muted">No adjustments recorded yet.</p>
               ) : (
                 movements.map((movement) => (
-                  <div className="flex items-center justify-between gap-4 border-b border-[#1e2a23]/10 pb-3 last:border-0" key={movement.id}>
+                  <div className="flex items-center justify-between gap-4 border-b border-ink/10 pb-3 last:border-0" key={movement.id}>
                     <div>
-                      <p className="font-semibold text-[#1e2a23]">{movement.productName}</p>
-                      <p className="text-xs text-[#5d665f]">{movement.reason}{movement.reference ? ` · ${movement.reference}` : ""}</p>
+                      <p className="font-semibold text-ink">{movement.productName}</p>
+                      <p className="text-xs text-muted">{movement.reason}{movement.reference ? ` · ${movement.reference}` : ""}</p>
                     </div>
                     <div className="text-right">
-                      <p className={`font-semibold ${movement.quantityDelta > 0 ? "text-[#226d54]" : "text-[#c75c3b]"}`}>
+                      <p className={`font-semibold ${movement.quantityDelta > 0 ? "text-success" : "text-brand-strong"}`}>
                         {movement.quantityDelta > 0 ? "+" : ""}{movement.quantityDelta}
                       </p>
-                      <p className="text-xs text-[#5d665f]">{new Date(movement.createdAt).toLocaleString()}</p>
+                      <p className="text-xs text-muted">{new Date(movement.createdAt).toLocaleString()}</p>
                     </div>
                   </div>
                 ))
@@ -123,11 +123,11 @@ export default function InventoryPage() {
         </section>
 
         <aside className="surface h-fit p-5 sm:p-6 xl:sticky xl:top-24">
-          <h2 className="text-xl font-semibold text-[#1e2a23]">Adjust stock</h2>
-          <p className="mt-2 text-sm leading-6 text-[#5d665f]">Use this for production receipts, returns, damage write-offs, and manual reconciliations.</p>
+          <h2 className="text-xl font-semibold text-ink">Adjust stock</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">Use this for production receipts, returns, damage write-offs, and manual reconciliations.</p>
 
           <form className="mt-6 space-y-4" onSubmit={(event) => void handleAdjust(event)}>
-            <label className="block text-sm font-semibold text-[#2a352f]">
+            <label className="block text-sm font-semibold text-ink">
               Product
               <select className="input-field" value={form.productId} onChange={(event) => setForm({ ...form, productId: event.target.value })}>
                 <option value="">Select product</option>
@@ -135,12 +135,12 @@ export default function InventoryPage() {
               </select>
             </label>
 
-            <label className="block text-sm font-semibold text-[#2a352f]">
+            <label className="block text-sm font-semibold text-ink">
               Quantity change
               <input className="input-field" placeholder="e.g. 25 or -5" type="number" value={form.quantityDelta} onChange={(event) => setForm({ ...form, quantityDelta: event.target.value })} />
             </label>
 
-            <label className="block text-sm font-semibold text-[#2a352f]">
+            <label className="block text-sm font-semibold text-ink">
               Reason
               <select className="input-field" value={form.reason} onChange={(event) => setForm({ ...form, reason: event.target.value })}>
                 <option value="manual_adjustment">Manual adjustment</option>
@@ -151,7 +151,7 @@ export default function InventoryPage() {
               </select>
             </label>
 
-            <label className="block text-sm font-semibold text-[#2a352f]">
+            <label className="block text-sm font-semibold text-ink">
               Reference
               <textarea className="input-field min-h-24 resize-none" value={form.reference} onChange={(event) => setForm({ ...form, reference: event.target.value })} />
             </label>

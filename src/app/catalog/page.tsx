@@ -131,49 +131,49 @@ export default function CatalogPage() {
   const productColumns = canEdit ? "grid-cols-[minmax(0,1fr)_90px_60px_150px]" : "grid-cols-[minmax(0,1fr)_110px_90px]";
 
   return (
-    <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]">
+    <main className="min-h-full min-w-0 flex-1 text-ink">
       <AppNav title="Catalog" subtitle="Products available in the POS" />
 
-      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="mx-auto grid grid-cols-1 max-w-7xl gap-6 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="surface p-5 sm:p-6">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-sm text-[#5d665f]">Main store</p>
-              <h2 className="mt-1 text-3xl font-semibold tracking-tight text-[#1e2a23]">Products</h2>
+              <p className="text-sm text-muted">Main store</p>
+              <h2 className="mt-1 text-3xl font-semibold tracking-tight text-ink">Products</h2>
             </div>
-            <span aria-live="polite" className="pill bg-[#f5e3d8] text-[#a14f35]">{status}</span>
+            <span aria-live="polite" className="pill bg-brand-soft text-brand-strong">{status}</span>
           </div>
 
           <div className="inset-panel overflow-x-auto">
             <div className={canEdit ? "min-w-[560px]" : undefined}>
-              <div className={`grid ${productColumns} gap-3 border-b border-[#1e2a23]/10 bg-white/40 px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#5d665f]`}>
+              <div className={`grid ${productColumns} gap-3 border-b border-ink/10 bg-white/40 px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted`}>
                 <span>Product</span>
                 <span>SKU</span>
                 <span className="text-right">Stock</span>
                 {canEdit ? <span className="text-right">Actions</span> : null}
               </div>
               {products.length === 0 ? (
-                <p className="p-8 text-sm text-[#5d665f]">No products found for this store.</p>
+                <p className="p-8 text-sm text-muted">No products found for this store.</p>
               ) : (
                 products.map((product) => (
-                  <div className={`grid ${productColumns} items-center gap-3 border-b border-[#1e2a23]/10 px-5 py-4 last:border-0 ${editingId === product.id ? "bg-white/70" : ""}`} key={product.id}>
+                  <div className={`grid ${productColumns} items-center gap-3 border-b border-ink/10 px-5 py-4 last:border-0 ${editingId === product.id ? "bg-white/70" : ""}`} key={product.id}>
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-[#1e2a23]">{product.name}</p>
-                      <p className="mt-1 truncate text-sm text-[#5d665f]">{product.category} · {formatMoney(product.price)}</p>
+                      <p className="truncate font-semibold text-ink">{product.name}</p>
+                      <p className="mt-1 truncate text-sm text-muted">{product.category} · {formatMoney(product.price)}</p>
                     </div>
-                    <span className="truncate text-sm text-[#5d665f]">{product.sku}</span>
-                    <span className={`text-right text-sm font-semibold ${product.stock === 0 ? "text-[#c75c3b]" : "text-[#1e2a23]"}`}>{product.stock}</span>
+                    <span className="truncate text-sm text-muted">{product.sku}</span>
+                    <span className={`text-right text-sm font-semibold ${product.stock === 0 ? "text-brand-strong" : "text-ink"}`}>{product.stock}</span>
                     {canEdit ? (
                       <div className="flex justify-end gap-1">
                         {confirmingDelete === product.id ? (
                           <>
-                            <button className={`${rowActionClass} bg-[#c75c3b] text-white hover:bg-[#a14f35]`} disabled={isSaving} onClick={() => void handleDelete(product)} type="button">Confirm</button>
-                            <button className={`${rowActionClass} text-[#5d665f] hover:bg-white/70`} onClick={() => setConfirmingDelete(null)} type="button">Cancel</button>
+                            <button className={`${rowActionClass} bg-brand-strong text-white hover:bg-ink`} disabled={isSaving} onClick={() => void handleDelete(product)} type="button">Confirm</button>
+                            <button className={`${rowActionClass} text-muted hover:bg-white/70`} onClick={() => setConfirmingDelete(null)} type="button">Cancel</button>
                           </>
                         ) : (
                           <>
-                            <button aria-label={`Edit ${product.name}`} className={`${rowActionClass} text-[#1e2a23] hover:bg-white/70`} onClick={() => startEdit(product)} type="button">Edit</button>
-                            <button aria-label={`Delete ${product.name}`} className={`${rowActionClass} text-[#a14f35] hover:bg-[#fbeae5]`} onClick={() => setConfirmingDelete(product.id)} type="button">Delete</button>
+                            <button aria-label={`Edit ${product.name}`} className={`${rowActionClass} text-ink hover:bg-white/70`} onClick={() => startEdit(product)} type="button">Edit</button>
+                            <button aria-label={`Delete ${product.name}`} className={`${rowActionClass} text-brand-strong hover:bg-danger-soft`} onClick={() => setConfirmingDelete(product.id)} type="button">Delete</button>
                           </>
                         )}
                       </div>
@@ -189,33 +189,33 @@ export default function CatalogPage() {
           <div className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
             <form className="surface p-5 sm:p-6" onSubmit={(event) => void handleSubmit(event)}>
               <div className="mb-5">
-                <h2 className="text-xl font-semibold text-[#1e2a23]">{editingProduct ? "Edit product" : "Add product"}</h2>
-                <p className="mt-2 text-sm leading-6 text-[#5d665f]">{editingProduct ? `Changing ${editingProduct.name}. Stock is changed on the Inventory page so each change is logged.` : "New products become available in the POS after saving."}</p>
+                <h2 className="text-xl font-semibold text-ink">{editingProduct ? "Edit product" : "Add product"}</h2>
+                <p className="mt-2 text-sm leading-6 text-muted">{editingProduct ? `Changing ${editingProduct.name}. Stock is changed on the Inventory page so each change is logged.` : "New products become available in the POS after saving."}</p>
               </div>
 
               <div className="space-y-4">
-                <label className="block text-sm font-semibold text-[#2a352f]">
+                <label className="block text-sm font-semibold text-ink">
                   Name
                   <input required className="input-field" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
                 </label>
 
-                <label className="block text-sm font-semibold text-[#2a352f]">
+                <label className="block text-sm font-semibold text-ink">
                   SKU
                   <input required className="input-field uppercase" value={form.sku} onChange={(event) => setForm({ ...form, sku: event.target.value })} />
                 </label>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <label className="block text-sm font-semibold text-[#2a352f]">
+                  <label className="block text-sm font-semibold text-ink">
                     Price ({currency})
                     <input required min="0" step={currency === "IDR" ? "1" : "0.01"} type="number" className="input-field" value={form.price} onChange={(event) => setForm({ ...form, price: event.target.value })} />
                   </label>
-                  <label className="block text-sm font-semibold text-[#2a352f]">
+                  <label className="block text-sm font-semibold text-ink">
                     {editingProduct ? "Stock (read only)" : "Stock"}
                     <input required disabled={Boolean(editingProduct)} min="0" step="1" type="number" className="input-field disabled:opacity-60" value={form.stock} onChange={(event) => setForm({ ...form, stock: event.target.value })} />
                   </label>
                 </div>
 
-                <label className="block text-sm font-semibold text-[#2a352f]">
+                <label className="block text-sm font-semibold text-ink">
                   Category
                   <select className="input-field" value={form.categoryId} onChange={(event) => setForm({ ...form, categoryId: event.target.value })}>
                     <option value="">Uncategorized</option>
@@ -229,18 +229,18 @@ export default function CatalogPage() {
             </form>
 
             <section className="surface p-5 sm:p-6">
-              <h2 className="text-xl font-semibold text-[#1e2a23]">Categories</h2>
-              <p className="mt-2 text-sm leading-6 text-[#5d665f]">Deleting a category keeps its products; they become uncategorized.</p>
+              <h2 className="text-xl font-semibold text-ink">Categories</h2>
+              <p className="mt-2 text-sm leading-6 text-muted">Deleting a category keeps its products; they become uncategorized.</p>
 
               <ul className="mt-4 space-y-2">
-                {categories.length === 0 ? <li className="text-sm text-[#5d665f]">No categories yet.</li> : null}
+                {categories.length === 0 ? <li className="text-sm text-muted">No categories yet.</li> : null}
                 {categories.map((category) => (
                   <li className="inset-panel px-3 py-2" key={category.id}>
                     {renaming?.id === category.id ? (
                       <form className="flex items-center gap-2" onSubmit={(event) => void handleRenameCategory(event)}>
                         <input aria-label={`New name for ${category.name}`} autoFocus required className="field min-w-0 flex-1 px-2 py-1.5 text-sm outline-none" value={renaming.name} onChange={(event) => setRenaming({ id: category.id, name: event.target.value })} />
-                        <button className={`${rowActionClass} bg-[#1e2a23] text-white`} disabled={isSaving} type="submit">Save</button>
-                        <button className={`${rowActionClass} text-[#5d665f] hover:bg-white/70`} onClick={() => setRenaming(null)} type="button">Cancel</button>
+                        <button className={`${rowActionClass} bg-ink text-white`} disabled={isSaving} type="submit">Save</button>
+                        <button className={`${rowActionClass} text-muted hover:bg-white/70`} onClick={() => setRenaming(null)} type="button">Cancel</button>
                       </form>
                     ) : (
                       <div className="flex items-center justify-between gap-2">
@@ -248,13 +248,13 @@ export default function CatalogPage() {
                         <div className="flex shrink-0 gap-1">
                           {confirmingDelete === category.id ? (
                             <>
-                              <button className={`${rowActionClass} bg-[#c75c3b] text-white hover:bg-[#a14f35]`} disabled={isSaving} onClick={() => void handleDeleteCategory(category)} type="button">Confirm</button>
-                              <button className={`${rowActionClass} text-[#5d665f] hover:bg-white/70`} onClick={() => setConfirmingDelete(null)} type="button">Cancel</button>
+                              <button className={`${rowActionClass} bg-brand-strong text-white hover:bg-ink`} disabled={isSaving} onClick={() => void handleDeleteCategory(category)} type="button">Confirm</button>
+                              <button className={`${rowActionClass} text-muted hover:bg-white/70`} onClick={() => setConfirmingDelete(null)} type="button">Cancel</button>
                             </>
                           ) : (
                             <>
-                              <button aria-label={`Rename ${category.name}`} className={`${rowActionClass} text-[#1e2a23] hover:bg-white/70`} onClick={() => { setConfirmingDelete(null); setRenaming({ id: category.id, name: category.name }); }} type="button">Rename</button>
-                              <button aria-label={`Delete category ${category.name}`} className={`${rowActionClass} text-[#a14f35] hover:bg-[#fbeae5]`} onClick={() => setConfirmingDelete(category.id)} type="button">Delete</button>
+                              <button aria-label={`Rename ${category.name}`} className={`${rowActionClass} text-ink hover:bg-white/70`} onClick={() => { setConfirmingDelete(null); setRenaming({ id: category.id, name: category.name }); }} type="button">Rename</button>
+                              <button aria-label={`Delete category ${category.name}`} className={`${rowActionClass} text-brand-strong hover:bg-danger-soft`} onClick={() => setConfirmingDelete(category.id)} type="button">Delete</button>
                             </>
                           )}
                         </div>
@@ -272,8 +272,8 @@ export default function CatalogPage() {
           </div>
         ) : (
           <aside className="surface h-fit p-5 sm:p-6 xl:sticky xl:top-24">
-            <h2 className="text-xl font-semibold text-[#1e2a23]">Read-only catalog</h2>
-            <p className="mt-2 text-sm leading-6 text-[#5d665f]">Your staff role can view products, but only managers and owners can change the catalog.</p>
+            <h2 className="text-xl font-semibold text-ink">Read-only catalog</h2>
+            <p className="mt-2 text-sm leading-6 text-muted">Your staff role can view products, but only managers and owners can change the catalog.</p>
           </aside>
         )}
       </div>

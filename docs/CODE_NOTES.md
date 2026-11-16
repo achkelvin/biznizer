@@ -141,6 +141,8 @@ Each folder is a URL. `src/app/pos/page.tsx` is the page at `/pos`.
 | `production/page.tsx` | `/production` | Batch planner: how much oil, alcohol and packaging a batch needs and what it costs. Can save the batch, change a saved batch's status, and delete it |
 | `team/page.tsx` | `/team` | Owners add users, change their role, and remove them |
 
+**Colour tokens.** Colours are named tokens defined at the top of `globals.css` (`text-ink`, `text-muted`, `text-subtle`, `text-brand-strong`, `bg-brand-soft`, `border-ink/10` ...), not raw hex. The full list, what each is for, and the accessibility rules are in `design-system/biznizer/MASTER.md`.
+
 **Glass classes in `globals.css`** (use these instead of repeating styles):
 
 | Class | Use |

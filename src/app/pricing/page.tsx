@@ -22,18 +22,18 @@ type ExtraCost = { label: string; amount: number };
 type BundleItem = { name: string; price: number; cost: number };
 
 const cardClass = "surface p-5";
-const headingClass = "mb-4 text-xs font-bold uppercase tracking-[0.16em] text-[#69736b]";
+const headingClass = "mb-4 text-xs font-bold uppercase tracking-[0.16em] text-muted";
 const rowInputClass = "min-w-0 field px-2 py-2 text-sm outline-none focus:bg-white";
-const columnLabelClass = "text-[10px] font-semibold uppercase tracking-[0.1em] text-[#69736b]";
+const columnLabelClass = "text-[11px] font-semibold uppercase tracking-[0.1em] text-muted";
 
 function PricingInput({ label, hint, value, suffix, step = "1", onChange }: { label: string; hint?: string; value: string | number; suffix: string; step?: string; onChange: (value: string) => void }) {
   return (
     <label className="block text-sm font-semibold">
       {label}
-      {hint ? <span className="mt-1 block text-xs font-normal leading-5 text-[#69736b]">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-xs font-normal leading-5 text-muted">{hint}</span> : null}
       <div className="mt-2 flex items-center field">
         <input className="min-w-0 flex-1 bg-transparent px-3 py-2.5 font-normal outline-none focus:bg-white" min="0" step={step} type="number" value={value} onChange={(event) => onChange(event.target.value)} />
-        {suffix ? <span className="px-3 text-xs text-[#69736b]">{suffix}</span> : null}
+        {suffix ? <span className="px-3 text-xs text-muted">{suffix}</span> : null}
       </div>
     </label>
   );
@@ -94,10 +94,10 @@ export default function PricingPage() {
     return { totalPrice, totalCost, price, savings: totalPrice - price, profit, margin: price ? (profit / price) * 100 : 0 };
   }, [inputs.discount, items]);
 
-  const marginColor = (margin: number) => (margin >= HEALTHY_MARGIN ? "text-[#4a7c59]" : "text-[#b5541f]");
+  const marginColor = (margin: number) => (margin >= HEALTHY_MARGIN ? "text-success" : "text-brand-strong");
 
   return (
-    <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]">
+    <main className="min-h-full min-w-0 flex-1 text-ink">
       <AppNav
         title={t("Perfume pricing", "Kalkulator harga parfum")}
         subtitle={t("New bottles, refills, and bundles", "Harga baru, isi ulang, dan bundel")}
@@ -105,24 +105,24 @@ export default function PricingPage() {
 
       <div className="mx-auto max-w-7xl p-6 sm:p-10">
         <header className="mb-7">
-          <p className="text-sm text-[#69736b]">{t("Product economics", "Ekonomi produk")}</p>
+          <p className="text-sm text-muted">{t("Product economics", "Ekonomi produk")}</p>
           <h2 className="mt-1 text-3xl font-semibold tracking-tight">{t("Build your price", "Bangun harga Anda")}</h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-[#69736b]">{t("Use 50ml as the reference size. The volume curve creates natural bulk pricing, while refills remove packaging costs.", "Gunakan ukuran 50ml sebagai referensi. Kurva volume memberi diskon alami, sementara isi ulang menghapus biaya kemasan.")}</p>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">{t("Use 50ml as the reference size. The volume curve creates natural bulk pricing, while refills remove packaging costs.", "Gunakan ukuran 50ml sebagai referensi. Kurva volume memberi diskon alami, sementara isi ulang menghapus biaya kemasan.")}</p>
         </header>
 
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
           <section className={cardClass}>
             <h3 className={headingClass}>{t("Liquid formula / 50ml", "Formula cairan / 50ml")}</h3>
             <div className="space-y-4">
               {moneyField("oil", t("Fragrance oil cost", "Biaya minyak fragrance"))}
               {moneyField("alcohol", t("Perfumer's alcohol cost", "Biaya alkohol parfum"))}
             </div>
-            <p className="mt-4 text-xs leading-5 text-[#69736b]">{t("Liquid cost scales linearly with bottle size.", "Biaya cairan naik sebanding dengan ukuran botol.")}</p>
+            <p className="mt-4 text-xs leading-5 text-muted">{t("Liquid cost scales linearly with bottle size.", "Biaya cairan naik sebanding dengan ukuran botol.")}</p>
           </section>
 
           <section className={cardClass}>
             <h3 className={headingClass}>{t("Packaging / unit", "Kemasan / unit")}</h3>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {moneyField("bottle", t("Glass bottle", "Botol kaca"))}
               {moneyField("cap", t("Cap / spray pump", "Tutup / pompa semprot"))}
               {moneyField("label", t("Label", "Label"))}
@@ -134,8 +134,8 @@ export default function PricingPage() {
           </section>
 
           <section className={cardClass}>
-            <h3 className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-[#69736b]">{t("Extra costs", "Biaya tambahan")}</h3>
-            <p className="mb-4 text-xs leading-5 text-[#69736b]">{t("QC, ribbon, printing, or any other per-unit cost. Counted like packaging, so refills skip it.", "QC, pita, cetak, atau biaya per unit lainnya. Dihitung seperti kemasan, jadi tidak masuk harga isi ulang.")}</p>
+            <h3 className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-muted">{t("Extra costs", "Biaya tambahan")}</h3>
+            <p className="mb-4 text-xs leading-5 text-muted">{t("QC, ribbon, printing, or any other per-unit cost. Counted like packaging, so refills skip it.", "QC, pita, cetak, atau biaya per unit lainnya. Dihitung seperti kemasan, jadi tidak masuk harga isi ulang.")}</p>
             <div className="mb-1 grid grid-cols-[1fr_110px_32px] gap-2">
               <span className={columnLabelClass}>{t("Label", "Nama")}</span>
               <span className={columnLabelClass}>{t("Amount", "Jumlah")} ({currency})</span>
@@ -144,14 +144,14 @@ export default function PricingPage() {
               <div className="mb-2 grid grid-cols-[1fr_110px_32px] gap-2" key={index}>
                 <input aria-label={t("Cost label", "Nama biaya")} className={rowInputClass} placeholder={t("Ribbon, QC", "Pita, QC")} value={item.label} onChange={(event) => updateExtra(index, { label: event.target.value })} />
                 <input aria-label={t("Cost amount", "Jumlah biaya")} className={rowInputClass} min="0" step={moneyStep} type="number" value={shown(item.amount) || ""} onChange={(event) => updateExtra(index, { amount: parseInput(event.target.value) })} />
-                <button aria-label={t("Remove cost", "Hapus biaya")} className="field text-[#b5541f]" onClick={() => setExtras((current) => (current.length === 1 ? [{ label: "", amount: 0 }] : current.filter((_, rowIndex) => rowIndex !== index)))} type="button">×</button>
+                <button aria-label={t("Remove cost", "Hapus biaya")} className="field text-brand-strong" onClick={() => setExtras((current) => (current.length === 1 ? [{ label: "", amount: 0 }] : current.filter((_, rowIndex) => rowIndex !== index)))} type="button">×</button>
               </div>
             ))}
-            <button className="mt-2 rounded-lg bg-white/60 px-3 py-2 text-xs font-semibold text-[#8f6432]" onClick={() => setExtras((current) => [...current, { label: "", amount: 0 }])} type="button">+ {t("Add cost", "Tambah biaya")}</button>
+            <button className="mt-2 rounded-lg bg-white/60 px-3 py-2 text-xs font-semibold text-gold" onClick={() => setExtras((current) => [...current, { label: "", amount: 0 }])} type="button">+ {t("Add cost", "Tambah biaya")}</button>
           </section>
         </div>
 
-        <div className="mt-4 grid gap-4 xl:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
           <section className={cardClass}>
             <h3 className={headingClass}>{t("Unpredictable costs", "Biaya tak terduga")}</h3>
             <div className="space-y-4">
@@ -170,27 +170,27 @@ export default function PricingPage() {
             </div>
           </section>
 
-          <aside className="surface-dark p-5 text-[#fffdf8]">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#e6a083]">{t("Reference summary", "Ringkasan referensi")}</p>
+          <aside className="surface-dark p-5 text-on-dark">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-peach">{t("Reference summary", "Ringkasan referensi")}</p>
             <p className="mt-5 text-3xl font-semibold">{formatMoney(pricing.referencePrice)}</p>
-            <p className="mt-1 text-sm text-[#b7c1ba]">{t("50ml new bottle price", "Harga botol baru 50ml")}</p>
-            <div className="mt-5 space-y-2 border-t border-white/15 pt-4 text-sm text-[#b7c1ba]">
-              <div className="flex justify-between"><span>{t("Refill price", "Harga isi ulang")}</span><span className="text-[#e6a083]">{formatMoney(pricing.reference?.refillPrice ?? 0)}</span></div>
+            <p className="mt-1 text-sm text-on-dark-muted">{t("50ml new bottle price", "Harga botol baru 50ml")}</p>
+            <div className="mt-5 space-y-2 border-t border-white/15 pt-4 text-sm text-on-dark-muted">
+              <div className="flex justify-between"><span>{t("Refill price", "Harga isi ulang")}</span><span className="text-peach">{formatMoney(pricing.reference?.refillPrice ?? 0)}</span></div>
               <div className="flex justify-between"><span>{t("Cost / unit", "Biaya / unit")}</span><span>{formatMoney(pricing.referenceCost)}</span></div>
               <div className="flex justify-between"><span>{t("Packaging / unit", "Kemasan / unit")}</span><span>{formatMoney(pricing.packaging)}</span></div>
               <div className="flex justify-between"><span>{t("Overhead / unit", "Overhead / unit")}</span><span>{formatMoney(pricing.overhead)}</span></div>
-              <div className="flex justify-between border-t border-white/15 pt-3 font-semibold text-[#fffdf8]"><span>{t("Net profit / unit", "Laba bersih / unit")}</span><span>{formatMoney(pricing.reference?.netProfit ?? 0)}</span></div>
+              <div className="flex justify-between border-t border-white/15 pt-3 font-semibold text-on-dark"><span>{t("Net profit / unit", "Laba bersih / unit")}</span><span>{formatMoney(pricing.reference?.netProfit ?? 0)}</span></div>
             </div>
           </aside>
         </div>
 
         <section className={`mt-6 ${cardClass}`}>
           <h3 className="text-lg font-semibold">{t("Pricing by size", "Harga per ukuran")}</h3>
-          <p className="mt-1 text-sm text-[#69736b]">{t("The 50ml row is the reference. Refill pricing removes all packaging costs, including your extra costs.", "Baris 50ml adalah referensi. Harga isi ulang menghapus semua biaya kemasan, termasuk biaya tambahan.")}</p>
+          <p className="mt-1 text-sm text-muted">{t("The 50ml row is the reference. Refill pricing removes all packaging costs, including your extra costs.", "Baris 50ml adalah referensi. Harga isi ulang menghapus semua biaya kemasan, termasuk biaya tambahan.")}</p>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[760px] border-collapse text-sm">
               <thead>
-                <tr className="border-b border-[#1e2a23]/10 text-xs uppercase tracking-[0.1em] text-[#69736b]">
+                <tr className="border-b border-ink/10 text-xs uppercase tracking-[0.1em] text-muted">
                   <th className="px-3 py-3 text-left">{t("Size", "Ukuran")}</th>
                   <th className="px-3 py-3 text-right">{t("Total cost", "Total biaya")}</th>
                   <th className="px-3 py-3 text-right">{t("New price", "Harga baru")}</th>
@@ -202,7 +202,7 @@ export default function PricingPage() {
               </thead>
               <tbody>
                 {pricing.rows.map((row) => (
-                  <tr className={row.size === REF_SIZE ? "border-b border-[#1e2a23]/10 bg-[#f2ebe0] font-semibold" : "border-b border-[#1e2a23]/10"} key={row.size}>
+                  <tr className={row.size === REF_SIZE ? "border-b border-ink/10 bg-[#f2ebe0] font-semibold" : "border-b border-ink/10"} key={row.size}>
                     <td className="px-3 py-3">{row.size}ml</td>
                     <td className="px-3 py-3 text-right">{formatMoney(row.newCost)}</td>
                     <td className="px-3 py-3 text-right">{formatMoney(row.newPrice)}</td>
@@ -215,13 +215,13 @@ export default function PricingPage() {
               </tbody>
             </table>
           </div>
-          <p className="mt-4 text-xs leading-5 text-[#69736b]">{t(`Profit grows by size^${inputs.curve} instead of linearly, so bigger bottles earn more total profit at a smaller margin percentage.`, `Laba tumbuh mengikuti ukuran^${inputs.curve}, bukan linear, sehingga botol besar menghasilkan laba total lebih besar dengan persentase margin lebih kecil.`)}</p>
+          <p className="mt-4 text-xs leading-5 text-muted">{t(`Profit grows by size^${inputs.curve} instead of linearly, so bigger bottles earn more total profit at a smaller margin percentage.`, `Laba tumbuh mengikuti ukuran^${inputs.curve}, bukan linear, sehingga botol besar menghasilkan laba total lebih besar dengan persentase margin lebih kecil.`)}</p>
         </section>
 
-        <section className="mt-6 grid gap-4 xl:grid-cols-2">
+        <section className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
           <div className={cardClass}>
             <h3 className="text-lg font-semibold">{t("Bundle items", "Isi bundel")}</h3>
-            <p className="mt-1 text-sm text-[#69736b]">{t("Enter each item's price and cost from the table above, then set the bundle discount.", "Masukkan harga dan biaya tiap item dari tabel di atas, lalu atur diskon bundel.")}</p>
+            <p className="mt-1 text-sm text-muted">{t("Enter each item's price and cost from the table above, then set the bundle discount.", "Masukkan harga dan biaya tiap item dari tabel di atas, lalu atur diskon bundel.")}</p>
             <div className="mb-1 mt-4 grid grid-cols-[1fr_105px_105px_32px] gap-2">
               <span className={columnLabelClass}>Item</span>
               <span className={columnLabelClass}>{t("Price", "Harga")} ({currency})</span>
@@ -233,11 +233,11 @@ export default function PricingPage() {
                   <input aria-label={t("Item name", "Nama item")} className={rowInputClass} placeholder={t("Item name", "Nama item")} value={item.name} onChange={(event) => updateItem(index, { name: event.target.value })} />
                   <input aria-label={t("Item price", "Harga item")} className={rowInputClass} min="0" step={moneyStep} type="number" value={shown(item.price) || ""} onChange={(event) => updateItem(index, { price: parseInput(event.target.value) })} />
                   <input aria-label={t("Item cost", "Biaya item")} className={rowInputClass} min="0" step={moneyStep} type="number" value={shown(item.cost) || ""} onChange={(event) => updateItem(index, { cost: parseInput(event.target.value) })} />
-                  <button aria-label={t("Remove bundle item", "Hapus item bundel")} className="field text-[#b5541f]" onClick={() => setItems((current) => current.filter((_, rowIndex) => rowIndex !== index))} type="button">×</button>
+                  <button aria-label={t("Remove bundle item", "Hapus item bundel")} className="field text-brand-strong" onClick={() => setItems((current) => current.filter((_, rowIndex) => rowIndex !== index))} type="button">×</button>
                 </div>
               ))}
             </div>
-            <button className="mt-3 rounded-lg bg-white/60 px-3 py-2 text-xs font-semibold text-[#8f6432]" onClick={() => setItems((current) => [...current, { name: "", price: 0, cost: 0 }])} type="button">+ {t("Add item", "Tambah item")}</button>
+            <button className="mt-3 rounded-lg bg-white/60 px-3 py-2 text-xs font-semibold text-gold" onClick={() => setItems((current) => [...current, { name: "", price: 0, cost: 0 }])} type="button">+ {t("Add item", "Tambah item")}</button>
             <div className="mt-5">{numberField("discount", t("Bundle discount", "Diskon bundel"), "%", t("How much cheaper the bundle is than buying the items separately.", "Seberapa lebih murah bundel dibanding membeli satuan."))}</div>
           </div>
 
@@ -245,10 +245,10 @@ export default function PricingPage() {
             <h3 className="text-lg font-semibold">{t("Bundle summary", "Ringkasan bundel")}</h3>
             <div className="mt-5 space-y-3 text-sm">
               <div className="flex justify-between"><span>{t("Individual prices", "Harga satuan")}</span><span>{formatMoney(bundle.totalPrice)}</span></div>
-              <div className="flex justify-between text-[#4a7c59]"><span>{t("Customer saves", "Pelanggan hemat")} ({inputs.discount}%)</span><span>-{formatMoney(bundle.savings)}</span></div>
+              <div className="flex justify-between text-success"><span>{t("Customer saves", "Pelanggan hemat")} ({inputs.discount}%)</span><span>-{formatMoney(bundle.savings)}</span></div>
               <div className="flex justify-between"><span>{t("Total cost", "Total biaya")}</span><span>{formatMoney(bundle.totalCost)}</span></div>
               <div className="flex justify-between"><span>{t("Bundle profit", "Laba bundel")}</span><span className={marginColor(bundle.margin)}>{formatMoney(bundle.profit)} ({bundle.margin.toFixed(1)}%)</span></div>
-              <div className="flex justify-between border-t border-[#1e2a23]/10 pt-3 text-lg font-semibold"><span>{t("Bundle price", "Harga bundel")}</span><span>{formatMoney(bundle.price)}</span></div>
+              <div className="flex justify-between border-t border-ink/10 pt-3 text-lg font-semibold"><span>{t("Bundle price", "Harga bundel")}</span><span>{formatMoney(bundle.price)}</span></div>
             </div>
           </div>
         </section>

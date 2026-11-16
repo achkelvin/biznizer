@@ -122,27 +122,27 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="app-content flex min-h-screen flex-1 flex-col lg:pl-[17rem]">
       <div className="glass-bar sticky top-0 z-30 flex h-14 items-center justify-between px-4 lg:hidden">
-        <Link className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#c75c3b]" href="/">Biznizer</Link>
-        <button aria-controls="app-sidebar" aria-expanded={isOpen} aria-label={language === "id" ? "Buka menu" : "Open menu"} className="rounded-xl p-2 text-[#1e2a23] hover:bg-white/60" onClick={() => setOpenOn(isOpen ? null : pathname)} type="button">
+        <Link className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-strong" href="/">Biznizer</Link>
+        <button aria-controls="app-sidebar" aria-expanded={isOpen} aria-label={language === "id" ? "Buka menu" : "Open menu"} className="rounded-xl p-2 text-ink hover:bg-white/60" onClick={() => setOpenOn(isOpen ? null : pathname)} type="button">
           <Icon><path d="M4 7h16M4 12h16M4 17h16" /></Icon>
         </button>
       </div>
 
-      {isOpen ? <button aria-label={language === "id" ? "Tutup menu" : "Close menu"} className="fixed inset-0 z-40 bg-[#1e2a23]/25 backdrop-blur-[2px] lg:hidden" onClick={() => setOpenOn(null)} type="button" /> : null}
+      {isOpen ? <button aria-label={language === "id" ? "Tutup menu" : "Close menu"} className="fixed inset-0 z-40 bg-ink/25 backdrop-blur-[2px] lg:hidden" onClick={() => setOpenOn(null)} type="button" /> : null}
 
       <aside className={`glass-sidebar fixed inset-y-0 left-0 z-50 flex w-[17rem] max-w-[85vw] flex-col p-4 transition-[translate,visibility] duration-300 lg:visible lg:m-3 lg:translate-x-0 lg:rounded-[28px] ${isOpen ? "translate-x-0" : "invisible -translate-x-full"}`} id="app-sidebar">
         <div className="flex items-center gap-3 px-2 pb-5 pt-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1e2a23] text-sm font-bold text-[#fffdf9] shadow-[0_6px_14px_rgba(30,42,35,0.25)]">B</span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-ink text-sm font-bold text-on-dark shadow-[0_6px_14px_rgba(30,42,35,0.25)]">B</span>
           <div>
-            <p className="text-[15px] font-semibold leading-tight text-[#1e2a23]">Biznizer</p>
-            <p className="text-xs text-[#5d665f]">{role ? <span className="capitalize">{role}</span> : language === "id" ? "Ruang kerja toko" : "Store workspace"}</p>
+            <p className="text-[15px] font-semibold leading-tight text-ink">Biznizer</p>
+            <p className="text-xs text-muted">{role ? <span className="capitalize">{role}</span> : language === "id" ? "Ruang kerja toko" : "Store workspace"}</p>
           </div>
         </div>
 
-        <nav aria-label={language === "id" ? "Navigasi utama" : "Main navigation"} className="-mx-1 flex-1 space-y-5 overflow-y-auto px-1">
+        <nav aria-label={language === "id" ? "Navigasi utama" : "Main navigation"} className="-mx-1 flex-1 space-y-5 overflow-y-auto px-1 [scrollbar-width:thin]">
           {groups.map((group) => (
             <div key={group.label[0]}>
-              <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8a8178]">{t(group.label)}</p>
+              <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-subtle">{t(group.label)}</p>
               <ul className="space-y-0.5">
                 {group.items.map((item) => {
                   const current = isCurrent(pathname, item.href);
@@ -160,10 +160,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        <div className="mt-4 space-y-3 border-t border-[#1e2a23]/10 pt-4">
+        <div className="mt-4 space-y-3 border-t border-ink/10 pt-4">
           <LocaleControls />
           {demoMode ? (
-            <p className="rounded-xl bg-[#f5e3d8]/80 px-3 py-2 text-xs leading-5 text-[#a14f35]">{language === "id" ? "Mode demo: tanpa login, data hanya di browser ini." : "Demo mode: no login, data stays in this browser."}</p>
+            <p className="rounded-xl bg-brand-soft/80 px-3 py-2 text-xs leading-5 text-brand-strong">{language === "id" ? "Mode demo: tanpa login, data hanya di browser ini." : "Demo mode: no login, data stays in this browser."}</p>
           ) : signedIn ? (
             <button className="sidebar-link w-full" onClick={() => void signOut()} type="button">
               <Icon><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10" /></Icon>

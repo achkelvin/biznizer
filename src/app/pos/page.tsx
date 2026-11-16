@@ -140,81 +140,81 @@ export default function PointOfSale() {
 
 
   return (
-    <main className="min-h-full min-w-0 flex-1 text-[#1e2a23]">
+    <main className="min-h-full min-w-0 flex-1 text-ink">
       <AppNav
         title="Point of sale"
         subtitle="Main store"
         right={
           <>
-            <span className={`pill ${isOnline ? "bg-[#eaf4ef] text-[#226d54]" : "bg-[#fbeae5] text-[#a14f35]"}`}>
-              <span aria-hidden="true">●</span>
+            <span className={`pill ${isOnline ? "bg-success-soft text-success" : "bg-danger-soft text-brand-strong"}`}>
+              <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
               {isOnline ? "Online" : "Offline"}
             </span>
-            <span className="pill bg-[#f5e3d8] text-[#a14f35]">{pendingSales} queued</span>
-            {pendingSales > 0 ? <button className="nav-link text-[#a14f35]" onClick={() => void retryPendingSales()} type="button">Sync now</button> : null}
+            <span className="pill bg-brand-soft text-brand-strong">{pendingSales} queued</span>
+            {pendingSales > 0 ? <button className="nav-link text-brand-strong" onClick={() => void retryPendingSales()} type="button">Sync now</button> : null}
           </>
         }
       />
 
-      <div className="mx-auto grid max-w-7xl gap-6 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_360px]">
-        {accessNotice ? <p className="col-span-full rounded-2xl border border-[#f0d4ca] bg-[#fff3ee] px-4 py-3 text-sm text-[#a14f35]">{accessNotice}</p> : null}
+      <div className="mx-auto grid grid-cols-1 max-w-7xl gap-6 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_360px]">
+        {accessNotice ? <p className="col-span-full rounded-2xl border border-danger-line bg-danger-soft px-4 py-3 text-sm text-brand-strong">{accessNotice}</p> : null}
 
         <section className="surface p-5 sm:p-6">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm text-[#5d665f]">Main store</p>
-              <h2 className="mt-1 text-3xl font-semibold tracking-tight text-[#1e2a23]">Choose a product</h2>
+              <p className="text-sm text-muted">Main store</p>
+              <h2 className="mt-1 text-3xl font-semibold tracking-tight text-ink">Choose a product</h2>
             </div>
-            <span className="rounded-full bg-[#f5e3d8] px-2.5 py-1 text-xs font-medium text-[#a14f35]">{products.length} available</span>
+            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand-strong">{products.length} available</span>
           </div>
 
-          <div className="mb-4 text-xs font-medium uppercase tracking-[0.16em] text-[#69736b]">
+          <div className="mb-4 text-xs font-medium uppercase tracking-[0.16em] text-muted">
             {catalogStatus === "loading" ? "Loading catalog..." : catalogStatus === "cached" ? "Using cached catalog" : "Catalog synced"}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {products.map((product) => (
-              <button className="group inset-panel p-4 text-left transition duration-200 hover:-translate-y-0.5 hover:border-[#c75c3b] hover:shadow-[0_10px_24px_rgba(199,92,59,0.08)] disabled:cursor-not-allowed disabled:opacity-40" disabled={product.stock === 0} key={product.id} onClick={() => addToCart(product)}>
-                <div className="flex aspect-[4/3] items-end rounded-xl bg-[#efe4d8] p-4 text-4xl font-semibold text-[#c75c3b] transition group-hover:bg-[#f3d7c8]">{product.name.slice(0, 1)}</div>
-                <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b6b58]">{product.category}</p>
+              <button className="group inset-panel p-4 text-left transition duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_24px_rgba(199,92,59,0.08)] disabled:cursor-not-allowed disabled:opacity-40" disabled={product.stock === 0} key={product.id} onClick={() => addToCart(product)}>
+                <div className="flex aspect-[4/3] items-end rounded-xl bg-[#efe4d8] p-4 text-4xl font-semibold text-brand transition group-hover:bg-[#f3d7c8]">{product.name.slice(0, 1)}</div>
+                <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.2em] text-subtle">{product.category}</p>
                 <div className="mt-2 flex items-center justify-between gap-4">
-                  <span className="font-semibold text-[#1e2a23]">{product.name}</span>
-                  <span className="text-sm font-medium text-[#1e2a23]">{formatMoney(product.price)}</span>
+                  <span className="font-semibold text-ink">{product.name}</span>
+                  <span className="text-sm font-medium text-ink">{formatMoney(product.price)}</span>
                 </div>
-                <p className="mt-2 text-xs text-[#5d665f]">{product.stock === 0 ? "Out of stock" : `${product.stock} in stock`} · {product.sku}</p>
+                <p className="mt-2 text-xs text-muted">{product.stock === 0 ? "Out of stock" : `${product.stock} in stock`} · {product.sku}</p>
               </button>
             ))}
           </div>
         </section>
 
         <aside className="surface flex h-fit flex-col p-5 sm:p-6 xl:sticky xl:top-24">
-          <div className="flex items-center justify-between border-b border-[#1e2a23]/10 pb-4">
-            <h2 className="text-xl font-semibold text-[#1e2a23]">Current sale</h2>
-            <span className="rounded-full bg-[#f5e3d8] px-2.5 py-1 text-xs font-medium text-[#a14f35]">{cart.length} items</span>
+          <div className="flex items-center justify-between border-b border-ink/10 pb-4">
+            <h2 className="text-xl font-semibold text-ink">Current sale</h2>
+            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand-strong">{cart.length} items</span>
           </div>
 
           <div className="min-h-48 flex-1 py-4">
             {cart.length === 0 ? (
-              <p className="py-14 text-center text-sm text-[#5d665f]">Add a product to begin.</p>
+              <p className="py-14 text-center text-sm text-muted">Add a product to begin.</p>
             ) : (
               cart.map((product, index) => (
-                <div className="flex items-center justify-between border-b border-[#1e2a23]/10 py-3 text-sm" key={`${product.id}-${index}`}>
-                  <span className="text-[#1e2a23]">{product.name}</span>
-                  <span className="font-medium text-[#1e2a23]">{formatMoney(product.price)}</span>
+                <div className="flex items-center justify-between border-b border-ink/10 py-3 text-sm" key={`${product.id}-${index}`}>
+                  <span className="text-ink">{product.name}</span>
+                  <span className="font-medium text-ink">{formatMoney(product.price)}</span>
                 </div>
               ))
             )}
           </div>
 
-          <div className="border-t border-[#1e2a23]/10 pt-5">
-            <div className="flex items-center justify-between text-lg font-semibold text-[#1e2a23]">
+          <div className="border-t border-ink/10 pt-5">
+            <div className="flex items-center justify-between text-lg font-semibold text-ink">
               <span>Total</span>
               <span>{formatMoney(total)}</span>
             </div>
 
-            <div className="mt-5 grid grid-cols-3 overflow-hidden rounded-xl border border-[#1e2a23]/10 bg-white/40 text-sm" role="group" aria-label="Payment method">
+            <div className="mt-5 grid grid-cols-3 overflow-hidden rounded-xl border border-ink/10 bg-white/40 text-sm" role="group" aria-label="Payment method">
               {(["cash", "card", "other"] as const).map((method) => (
-                <button className={`px-2 py-3 capitalize transition ${paymentMethod === method ? "bg-[#1e2a23] text-[#fffdf9]" : "text-[#5d665f] hover:text-[#1e2a23]"}`} key={method} onClick={() => setPaymentMethod(method)} type="button">{method}</button>
+                <button className={`px-2 py-3 capitalize transition ${paymentMethod === method ? "bg-ink text-on-dark" : "text-muted hover:text-ink"}`} key={method} onClick={() => setPaymentMethod(method)} type="button">{method}</button>
               ))}
             </div>
 
@@ -222,7 +222,7 @@ export default function PointOfSale() {
               {isOnline ? "Record sale" : "Queue sale offline"}
             </button>
 
-            {saleStatus ? <p className="mt-3 text-center text-xs text-[#5d665f]">{saleStatus}</p> : null}
+            {saleStatus ? <p className="mt-3 text-center text-xs text-muted">{saleStatus}</p> : null}
           </div>
         </aside>
       </div>

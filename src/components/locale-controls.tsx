@@ -15,7 +15,7 @@ export function LocaleControls() {
           {(["USD", "IDR"] as const).map((option) => <button aria-pressed={currency === option} className="px-2 py-1.5 font-semibold" key={option} onClick={() => setCurrency(option)} type="button">{option === "USD" ? "$" : "Rp"}</button>)}
         </div>
       </div>
-      <p className="px-1 text-[11px] text-[#8a7f74]">1 USD = {Math.round(rate).toLocaleString("id-ID")} IDR · {rateStatus === "live" ? "live" : "cached"}</p>
+      <p className="px-1 text-[11px] text-subtle">1 USD = {Math.round(rate).toLocaleString("id-ID")} IDR · {rateStatus === "live" ? "live" : "cached"}</p>
     </div>
   );
 }
